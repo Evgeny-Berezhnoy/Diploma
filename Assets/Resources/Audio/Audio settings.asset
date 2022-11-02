@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3017cf7e1089c941aaed800d56cc223, type: 3}
+  m_Name: Audio settings
+  m_EditorClassIdentifier: 
+  _view: {fileID: -2406728501582194703, guid: 59fae84a2eebaee4cb29b25d3c8573ec, type: 3}
+  _levelSoundtrack: {fileID: 8300000, guid: 2bb1a3d46b2a76f439603f51604c433c, type: 3}
+  _defeatSoundtrack: {fileID: 8300000, guid: ec5c17ba167ecb94e9f95503412cf27e, type: 3}
+  _victorySoundtrack: {fileID: 8300000, guid: df7c871d8c7eeca4596a23709f328599, type: 3}

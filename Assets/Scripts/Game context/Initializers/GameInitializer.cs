@@ -16,6 +16,7 @@ public class GameInitializer
         diContainer.Inject(new PlayerContextInitializer());
         diContainer.Inject(new ShootingInitializer());
         diContainer.Inject(new NetworkInitializer());
+        diContainer.Inject(new AudioInitializer());
 
         if (PhotonNetwork.IsMasterClient)
         {
