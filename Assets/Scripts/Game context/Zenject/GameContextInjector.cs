@@ -6,6 +6,7 @@ public class GameContextInjector : MonoInstaller
     #region Fields
 
     [SerializeField] private Camera _camera;
+    [SerializeField] private Transform _gameobjectsRoot;
     [SerializeField] private Transform _pool;
     [SerializeField] private Transform[] _spawnPoints;
 
@@ -19,6 +20,11 @@ public class GameContextInjector : MonoInstaller
             .Bind<Camera>()
             .WithId("GameContext : MainCamera")
             .FromInstance(_camera);
+
+        Container
+            .Bind<Transform>()
+            .WithId("GameContext : GameobjectsRoot")
+            .FromInstance(_gameobjectsRoot);
 
         Container
             .Bind<Transform>()

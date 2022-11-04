@@ -6,7 +6,7 @@ public class GameInitializer
     #region Injected methods
 
     [Inject]
-    public void Initialize(
+    private void Initialize(
         // AbstractionsInjector
         [Inject] DiContainerWrapper diContainer)
     {
@@ -17,6 +17,7 @@ public class GameInitializer
         diContainer.Inject(new ShootingInitializer());
         diContainer.Inject(new NetworkInitializer());
         diContainer.Inject(new AudioInitializer());
+        diContainer.Inject(new BackgroundInitializer());
 
         if (PhotonNetwork.IsMasterClient)
         {

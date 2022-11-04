@@ -6,7 +6,7 @@ public class AudioSettings : ScriptableObjectInstaller
 {
     #region Fields
 
-    [SerializeField] private AudiosourceView _view;
+    [SerializeField] private GameObject _prefab;
     [SerializeField] private AudioClip _levelSoundtrack;
     [SerializeField] private AudioClip _defeatSoundtrack;
     [SerializeField] private AudioClip _victorySoundtrack;
@@ -17,7 +17,11 @@ public class AudioSettings : ScriptableObjectInstaller
 
     public override void InstallBindings()
     {
-        Container.BindMonoBehaviour(_view, "AudioSettings : Audiosource");
+        Container
+            .Bind<AudiosourceView>()
+            .WithId("AudioSettings : Audiosource")
+            .FromComponentOn(_prefab)
+            .AsCached();
 
         Container
             .Bind<AudioClip>()
