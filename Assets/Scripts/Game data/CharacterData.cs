@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Character", menuName = "Game/Character")]
+[CreateAssetMenu(fileName = "Character", menuName = "Game/Data/Character")]
 public class CharacterData : ScriptableObject, IGameData
 {
     #region Fields

@@ -2,7 +2,7 @@
 using Photon.Pun;
 
 [RequireComponent(typeof(PhotonView))]
-public class PlayerView : MonoBehaviour, IPunObservable
+public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
 {
     #region Fields
 
@@ -17,12 +17,17 @@ public class PlayerView : MonoBehaviour, IPunObservable
     [SerializeField] private Collider2D _hitCollider;
     [SerializeField] private Collider2D _resurrectionCollider;
     [SerializeField] private Collider2D _resurrectionTargetCollider;
-    [SerializeField] private AudioClip _deathClip;
     [SerializeField] private AudioClip _resurrectionClip;
 
     private bool _isDead;
 
     private PhotonView _photonView;
+
+    #endregion
+
+    #region Observers
+
+    private ISubscriptionProperty<Transform> _onExplosion;
 
     #endregion
 
@@ -47,7 +52,11 @@ public class PlayerView : MonoBehaviour, IPunObservable
     public Collider2D ResurrectionTargetCollider => _resurrectionTargetCollider;
     public PhotonView ProjectilePool => _projectilePool;
     public bool IsDead => _isDead;
-    
+    public ISubscriptionProperty<Transform> OnExplosion
+    {
+        set => _onExplosion = value;
+    }
+
     #endregion
 
     #region Unity events
@@ -94,10 +103,7 @@ public class PlayerView : MonoBehaviour, IPunObservable
 
         SetProperties();
 
-        if (_resurrectionClip)
-        {
-            AudioSource.PlayClipAtPoint(_resurrectionClip, transform.position);
-        };
+        AudioSource.PlayClipAtPoint(_resurrectionClip, transform.position);
     }
 
     public void Die()
@@ -106,12 +112,9 @@ public class PlayerView : MonoBehaviour, IPunObservable
 
         _isDead = true;
 
-        SetProperties();
+        _onExplosion.Value = transform;
 
-        if (_deathClip)
-        {
-            AudioSource.PlayClipAtPoint(_deathClip, transform.position);
-        };
+        SetProperties();
     }
 
     private void SetProperties()

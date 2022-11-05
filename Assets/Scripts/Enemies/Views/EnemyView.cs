@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class EnemyView : MonoBehaviour, IPunObservable
+public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
 {
     #region Fields
 
@@ -12,7 +12,6 @@ public class EnemyView : MonoBehaviour, IPunObservable
     [Header("Components")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Collider2D _hitCollider;
-    [SerializeField] private AudioClip _deathClip;
     
     private int _poolViewID;
     private Transform _pool;
@@ -21,6 +20,12 @@ public class EnemyView : MonoBehaviour, IPunObservable
     private bool _isKilled;
 
     private PhotonView _photonView;
+
+    #endregion
+
+    #region Observers
+
+    private ISubscriptionProperty<Transform> _onExplosion;
 
     #endregion
 
@@ -57,6 +62,10 @@ public class EnemyView : MonoBehaviour, IPunObservable
             };
         }
     }
+    public ISubscriptionProperty<Transform> OnExplosion
+    {
+        set => _onExplosion = value;
+    }
 
     #endregion
 
@@ -66,6 +75,8 @@ public class EnemyView : MonoBehaviour, IPunObservable
     {
         _hitCollider.enabled    = !_isDead;
         _spriteRenderer.enabled = !_isDead;
+
+        PhotonCore.Instance.OnViewInstantiated(PhotonView);
     }
 
     #endregion
@@ -122,12 +133,9 @@ public class EnemyView : MonoBehaviour, IPunObservable
     {
         _isKilled = true;
 
-        Despawn();
+        _onExplosion.Value = transform;
 
-        if (_deathClip)
-        {
-            AudioSource.PlayClipAtPoint(_deathClip, transform.position);
-        };
+        Despawn();
     }
     
     public void Despawn()

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "Player settings", menuName = "Player/Player settings")]
+[CreateAssetMenu(fileName = "Player settings", menuName = "Game/Settings/Player")]
 public class PlayerSettings : ScriptableObjectInstaller
 {
     #region Fields

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Balance settings", menuName = "Game/Balance settings")]
+[CreateAssetMenu(fileName = "Balance settings", menuName = "Game/Settings/Balance")]
 public class BalanceSettings : ScriptableObject
 {
     

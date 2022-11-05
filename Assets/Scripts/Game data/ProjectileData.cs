@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Projectile", menuName = "Game/Projectile")]
-public class ProjectileData : ScriptableObject, IGameData
+[CreateAssetMenu(fileName = "Projectile", menuName = "Game/Data/Projectile")]
+public class ProjectileData : ScriptableObject, IGameData, IPoolData
 {
     #region Fields
 

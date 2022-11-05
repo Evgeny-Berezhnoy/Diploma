@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "Background settings", menuName = "Game/Background settings")]
+[CreateAssetMenu(fileName = "Background settings", menuName = "Game/Settings/Background")]
 public class BackgroundSettings : ScriptableObjectInstaller
 {
     #region Fields

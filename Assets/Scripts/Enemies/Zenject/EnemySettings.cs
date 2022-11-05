@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "Enemy settings", menuName = "Game/Enemy settings")]
+[CreateAssetMenu(fileName = "Enemy settings", menuName = "Game/Settings/Enemies")]
 public class EnemySettings : ScriptableObjectInstaller
 {
     #region Fields

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "Audio settings", menuName = "Game/Audio settings")]
+[CreateAssetMenu(fileName = "Audio settings", menuName = "Game/Settings/Audio")]
 public class AudioSettings : ScriptableObjectInstaller
 {
     #region Fields

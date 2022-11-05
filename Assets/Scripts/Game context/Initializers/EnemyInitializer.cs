@@ -98,9 +98,9 @@ public class EnemyInitializer
 
         var enemySequenceController = new EnemySequenceController(onAllEnemiesDestroyed);
 
-        onRetry.Subscribe(enemyService.Clear);
-        onRetry.Subscribe(enemySpawnerService.RestartEnemyPackSequence);
         onRetry.Subscribe(enemySequenceController.OnRestart);
+        onRetry.Subscribe(enemySpawnerService.RestartEnemyPackSequence);
+        onRetry.Subscribe(enemyService.Clear);
 
         onEnemySequenceEnd.Subscribe(enemySequenceController.OnEnemySequenceEnd);
 

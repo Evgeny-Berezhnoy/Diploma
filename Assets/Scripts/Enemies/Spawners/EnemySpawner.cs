@@ -83,9 +83,9 @@ public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView>
         var gunController           = new EnemyGunController(projectileLaunchData, _poolData.OnLaunchSubscription, _poolData.Data.WeaponRechargeTime);
 
         var healthController        = new HealthController(_poolData.Data.Health);
-        
-        healthController.AddDeathListener(view.Kill);
 
+        healthController.AddDeathListener(view.Kill);
+        
         var contactScaner =
             new ContactScaner(
                 view.HitCollider,

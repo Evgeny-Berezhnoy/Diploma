@@ -13,6 +13,9 @@ public abstract class NetworkControllerSpawner<TController, TView>
     protected PhotonView _root;
     protected Queue<TController> _instances;
 
+    protected TController _controller;
+    protected TView _view;
+    
     #endregion
 
     #region Properties
@@ -44,29 +47,27 @@ public abstract class NetworkControllerSpawner<TController, TView>
 
     public virtual TController Pop()
     {
-        TController instance;
-        
         while(_instances.Count <= _bufferQuantity)
         {
             Push(Create());
         };
 
-        instance = _instances.Dequeue();
-        
-        var view = GetView(instance);
+        _controller = _instances.Dequeue();
 
-        EnableView(view);
+        _view = GetView(_controller);
 
-        return instance;
+        EnableView(_view);
+
+        return _controller;
     }
 
-    public virtual void Push(TController instance)
+    public virtual void Push(TController controller)
     {
-        var view = GetView(instance);
+        _view = GetView(controller);
 
-        DisableView(view);
+        DisableView(_view);
 
-        _instances.Enqueue(instance);
+        _instances.Enqueue(controller);
     }
 
     public virtual void Heat(int quantity)

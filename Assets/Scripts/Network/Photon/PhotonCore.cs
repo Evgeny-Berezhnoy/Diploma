@@ -92,8 +92,6 @@ public class PhotonCore : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AddCallbackTarget(this);
 
-        PhotonNetwork.SendRate = 60;
-        
         _playerCustomProperties = new Hashtable();
         _playerCustomProperties.Add(PLAYER_PROPERTY_CHARACTER_DATA, "");
 

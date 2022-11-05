@@ -124,7 +124,6 @@ MonoBehaviour:
   _projectilePool: {fileID: 513655181067067658}
   _spriteRenderer: {fileID: 426965374374027362}
   _hitCollider: {fileID: 4084910629376650631}
-  _deathClip: {fileID: 0}
 --- !u!1 &426965372721875377
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,9 @@ public abstract class ControllerSpawner<TController, TView> : Spawner<GameObject
 
     protected Transform _root;
 
+    protected TView _view;
+    protected TController _controller;
+
     #endregion
 
     #region Constructors
@@ -28,36 +31,34 @@ public abstract class ControllerSpawner<TController, TView> : Spawner<GameObject
 
     public override TController Pop()
     {
-        var instance = base.Pop();
+        _controller = base.Pop();
 
-        var view = GetView(instance);
+        _view = GetView(_controller);
 
-        view.transform.SetParent(null);
-        view.gameObject.SetActive(true);
+        EnableView(_view);
 
-        return instance;
+        return _controller;
     }
 
     public override void Push(TController instance)
     {
-        var view = GetView(instance);
+        _view = GetView(instance);
 
-        view.transform.position = _root.position;
-        view.transform.SetParent(_root);
-        view.gameObject.SetActive(false);
+        DisableView(_view);
 
         base.Push(instance);
     }
 
     protected override TController Create()
     {
-        var prefabClone = Object.Instantiate(_template);
-        var view        = prefabClone.GetComponent<TView>();
+        _view = Object.Instantiate(_template).GetComponent<TView>();
 
-        return CreateController(view);
+        return CreateController(_view);
     }
 
     protected abstract TView GetView(TController controller);
+    protected abstract void EnableView(TView view);
+    protected abstract void DisableView(TView view);
     protected abstract TController CreateController(TView view);
 
     #endregion

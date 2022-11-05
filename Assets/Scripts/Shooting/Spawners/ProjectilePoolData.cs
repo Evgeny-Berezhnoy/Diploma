@@ -1,6 +1,6 @@
 ﻿using Photon.Pun;
 
-public sealed class ProjectilePoolData : PoolData<ProjectileData>
+public sealed class ProjectilePoolData : NetworkPoolData<ProjectileData>
 {
     #region Fields
 

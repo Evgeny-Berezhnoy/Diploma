@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 using Zenject;
 
 public class PlayerContextInitializer

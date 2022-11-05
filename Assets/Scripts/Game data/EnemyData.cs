@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Enemy", menuName = "Game/Enemy")]
-public class EnemyData : ScriptableObject, IGameData
+[CreateAssetMenu(fileName = "Enemy", menuName = "Game/Data/Enemy")]
+public class EnemyData : ScriptableObject, IGameData, IPoolData
 {
     #region Fields
 

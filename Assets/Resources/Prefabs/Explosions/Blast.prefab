@@ -10,11 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8322237816536662312}
   - component: {fileID: 6350944183456367296}
-  - component: {fileID: 864791753472765933}
-  - component: {fileID: 8056198878825819687}
-  - component: {fileID: 5311866481348670548}
+  - component: {fileID: 5402236728156892247}
   m_Layer: 0
-  m_Name: Explosion
+  m_Name: Blast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,26 +83,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &864791753472765933
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7726111014945281901}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8a570134baf500e4990e6a98b7f393fd, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8056198878825819687
+--- !u!114 &5402236728156892247
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,35 +92,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 7726111014945281901}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Script: {fileID: 11500000, guid: 66a6d434a584e954fa74e1fb8ed5a8c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters: []
-  m_SynchronizeLayers:
-  - SynchronizeType: 0
-    LayerIndex: 0
---- !u!114 &5311866481348670548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7726111014945281901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 8056198878825819687}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  _spriteRenderer: {fileID: 6350944183456367296}
+  _sprites:
+  - {fileID: 5986030973748356752, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 3815954189206336483, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -3690502768834906923, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -49130668184793455, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 4348620978117878488, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 7788287979965792003, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -7061159883300251746, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 497560801652076451, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 1213653969873606975, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 5240812164920822625, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -293603124231823741, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: 6340498610658388462, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -880289961269940256, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  - {fileID: -1849775667273832808, guid: 7e0db21db2cbacf44b52b0ae4b02cb57, type: 3}
+  _clip: {fileID: 8300000, guid: e09f54956a35dc44682e73c44876d994, type: 3}
