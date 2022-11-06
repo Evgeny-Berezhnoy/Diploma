@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 213588093}
   - component: {fileID: 213588094}
   m_Layer: 0
-  m_Name: Explosions
+  m_Name: SpecialEffects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

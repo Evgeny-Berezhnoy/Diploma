@@ -159,6 +159,7 @@ MonoBehaviour:
   _projectilePool: {fileID: 3392010188756432815}
   _spriteRenderer: {fileID: 1631205119691578049}
   _hitCollider: {fileID: 1631205119584636498}
+  _deathClip: {fileID: 7400000, guid: a85e279af429bed44835aa2246bb7109, type: 2}
 --- !u!1 &1631205119429765866
 GameObject:
   m_ObjectHideFlags: 0

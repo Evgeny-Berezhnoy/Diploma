@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
+public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 {
     #region Fields
 
@@ -12,6 +12,9 @@ public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
     [Header("Components")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Collider2D _hitCollider;
+
+    [Header("Animations")]
+    [SerializeField] private AnimationClip _deathClip;
     
     private int _poolViewID;
     private Transform _pool;
@@ -25,7 +28,7 @@ public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
 
     #region Observers
 
-    private ISubscriptionProperty<Transform> _onExplosion;
+    private ISubscriptionSurvey<SpecialEffectController> _specialEffectSurvey;
 
     #endregion
 
@@ -62,9 +65,9 @@ public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
             };
         }
     }
-    public ISubscriptionProperty<Transform> OnExplosion
+    public ISubscriptionSurvey<SpecialEffectController> SpecialEffectSurvey
     {
-        set => _onExplosion = value;
+        set => _specialEffectSurvey = value;
     }
 
     #endregion
@@ -133,7 +136,9 @@ public class EnemyView : MonoBehaviour, IPunObservable, IExplosive
     {
         _isKilled = true;
 
-        _onExplosion.Value = transform;
+        _specialEffectSurvey
+            .Get()
+            .Play(_deathClip, transform, false);
 
         Despawn();
     }

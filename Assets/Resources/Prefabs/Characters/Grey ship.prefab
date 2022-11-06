@@ -540,7 +540,8 @@ MonoBehaviour:
   _hitCollider: {fileID: 5677080840742443111}
   _resurrectionCollider: {fileID: 5838259334280045265}
   _resurrectionTargetCollider: {fileID: 4113049115418362564}
-  _resurrectionClip: {fileID: 8300000, guid: f16b2c125a811a24aaf81ab8c5834290, type: 3}
+  _deathClip: {fileID: 7400000, guid: a85e279af429bed44835aa2246bb7109, type: 2}
+  _resurrectionClip: {fileID: 7400000, guid: c15ecb286d9a8c045ae04d40db346fc7, type: 2}
 --- !u!1 &5677080841875446694
 GameObject:
   m_ObjectHideFlags: 0

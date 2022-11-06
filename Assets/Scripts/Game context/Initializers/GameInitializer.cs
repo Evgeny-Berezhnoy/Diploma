@@ -18,7 +18,7 @@ public class GameInitializer
         diContainer.Inject(new NetworkInitializer());
         diContainer.Inject(new AudioInitializer());
         diContainer.Inject(new BackgroundInitializer());
-        diContainer.Inject(new ExplosionInitializer());
+        diContainer.Inject(new SpecialEffectInitializer());
 
         if (PhotonNetwork.IsMasterClient)
         {

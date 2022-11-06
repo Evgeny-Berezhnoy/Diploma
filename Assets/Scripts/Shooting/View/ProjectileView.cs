@@ -2,14 +2,18 @@
 using Photon.Pun;
 
 [RequireComponent(typeof(PhotonView))]
-public class ProjectileView : MonoBehaviour, IPunObservable
+public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 {
     #region Fields
 
+    [Header("Components")]
     [SerializeField] private Collider2D _collider;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private AudioClip _launchClip;
     [SerializeField] private AudioClip _hitClip;
+
+    [Header("Animations")]
+    [SerializeField] private AnimationClip _hitAnimation;
 
     private PhotonView _photonView;
     
@@ -28,7 +32,8 @@ public class ProjectileView : MonoBehaviour, IPunObservable
     #region Observers
 
     private ISubscriptionMessenger<int, HealthController> _onHit;
-
+    private ISubscriptionSurvey<SpecialEffectController> _specialEffectSurvey;
+    
     #endregion
 
     #region Properties
@@ -72,7 +77,11 @@ public class ProjectileView : MonoBehaviour, IPunObservable
     {
         set => _onHit = value;
     }
-
+    public ISubscriptionSurvey<SpecialEffectController> SpecialEffectSurvey
+    {
+        set => _specialEffectSurvey = value;
+    }
+    
     #endregion
 
     #region Unity events
@@ -169,6 +178,10 @@ public class ProjectileView : MonoBehaviour, IPunObservable
             _onHit.Result.Hurt(_damage);
         };
 
+        _specialEffectSurvey
+            .Get()
+            .Play(_hitAnimation, transform, false);
+        
         Hide();
         
         AudioSource.PlayClipAtPoint(_hitClip, transform.position);

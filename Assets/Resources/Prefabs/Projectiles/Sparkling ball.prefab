@@ -91,6 +91,7 @@ MonoBehaviour:
   _spriteRenderer: {fileID: 4395022379168202064}
   _launchClip: {fileID: 8300000, guid: 370820ac179621743bcadf26cebe2d4b, type: 3}
   _hitClip: {fileID: 8300000, guid: efbf224f33648284392a566f247def04, type: 3}
+  _hitAnimation: {fileID: 7400000, guid: d5fee909d197d794dbbe07984ee2bc89, type: 2}
 --- !u!1 &4395022378297309461
 GameObject:
   m_ObjectHideFlags: 0

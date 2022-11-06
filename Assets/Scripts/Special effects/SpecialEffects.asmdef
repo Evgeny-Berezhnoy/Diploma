@@ -1,18 +1,13 @@
 {
-    "name": "PlayerContext",
+    "name": "SpecialEffects",
     "rootNamespace": "",
     "references": [
         "GUID:831409e8f9d13b5479a3baef9822ad34",
         "GUID:57c32fc907df0f54e8e6e8f0d2488336",
         "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
         "GUID:09d1dd755cccb324a8d130705892871c",
-        "GUID:15b817b154c6f2441b0ffaf80def76c2",
-        "GUID:98224ccc01489fd498336077e455d6b6",
-        "GUID:aa1c04496e12e9840af11a4cecd436b9",
-        "GUID:ebc22b2a76d61c441843f2be156d5279",
-        "GUID:9bbf4276f98176945a45f68240276a88",
-        "GUID:7eb3a15d573fe5c4bb379962790a0bdf",
-        "GUID:210eb990c6732aa41824313eb30c53e9"
+        "GUID:8b24a6f5eaac66944a06bf48c41ebb0a",
+        "GUID:9bbf4276f98176945a45f68240276a88"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -2,7 +2,7 @@
 using Photon.Pun;
 
 [RequireComponent(typeof(PhotonView))]
-public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
+public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 {
     #region Fields
 
@@ -17,7 +17,10 @@ public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
     [SerializeField] private Collider2D _hitCollider;
     [SerializeField] private Collider2D _resurrectionCollider;
     [SerializeField] private Collider2D _resurrectionTargetCollider;
-    [SerializeField] private AudioClip _resurrectionClip;
+
+    [Header("Animations")]
+    [SerializeField] private AnimationClip _deathClip;
+    [SerializeField] private AnimationClip _resurrectionClip;
 
     private bool _isDead;
 
@@ -27,7 +30,7 @@ public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
 
     #region Observers
 
-    private ISubscriptionProperty<Transform> _onExplosion;
+    private ISubscriptionSurvey<SpecialEffectController> _specialEffectSurvey;
 
     #endregion
 
@@ -52,11 +55,11 @@ public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
     public Collider2D ResurrectionTargetCollider => _resurrectionTargetCollider;
     public PhotonView ProjectilePool => _projectilePool;
     public bool IsDead => _isDead;
-    public ISubscriptionProperty<Transform> OnExplosion
+    public ISubscriptionSurvey<SpecialEffectController> SpecialEffectSurvey
     {
-        set => _onExplosion = value;
+        set => _specialEffectSurvey = value;
     }
-
+    
     #endregion
 
     #region Unity events
@@ -101,9 +104,11 @@ public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
     
         _isDead = false;
 
-        SetProperties();
+        _specialEffectSurvey
+            .Get()
+            .Play(_resurrectionClip, transform, true);
 
-        AudioSource.PlayClipAtPoint(_resurrectionClip, transform.position);
+        SetProperties();
     }
 
     public void Die()
@@ -112,8 +117,10 @@ public class PlayerView : MonoBehaviour, IPunObservable, IExplosive
 
         _isDead = true;
 
-        _onExplosion.Value = transform;
-
+        _specialEffectSurvey
+            .Get()
+            .Play(_deathClip, transform, false);
+        
         SetProperties();
     }
 
