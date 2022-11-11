@@ -6,6 +6,7 @@ public class HealthController : IController, IDisposableAdvanced
     #region Events
 
     private event Action _onDeath;
+    private event Action<float> _onHealthChanged;
 
     #endregion
 
@@ -14,6 +15,7 @@ public class HealthController : IController, IDisposableAdvanced
     private bool _isDisposed;
     private int _currentHealth;
     private int _maxHealth;
+    private float _healthPercentage;
 
     #endregion
 
@@ -43,17 +45,31 @@ public class HealthController : IController, IDisposableAdvanced
 
         _isDisposed = true;
 
-        var handlers =
+        var deathHandlers =
             _onDeath
                 ?.GetInvocationList()
                 .Cast<Action>()
                 .ToList();
 
-        if (handlers != null)
+        if (deathHandlers != null)
         {
-            for (int i = 0; i < handlers.Count; i++)
+            for (int i = 0; i < deathHandlers.Count; i++)
             {
-                _onDeath -= handlers[i];
+                _onDeath -= deathHandlers[i];
+            };
+        };
+
+        var healthChangedHandlers =
+            _onHealthChanged
+                ?.GetInvocationList()
+                .Cast<Action<float>>()
+                .ToList();
+
+        if (healthChangedHandlers != null)
+        {
+            for (int i = 0; i < healthChangedHandlers.Count; i++)
+            {
+                _onHealthChanged -= healthChangedHandlers[i];
             };
         };
 
@@ -69,11 +85,18 @@ public class HealthController : IController, IDisposableAdvanced
         _onDeath += action;
     }
 
+    public void AddHealthChangedListener(Action<float> action)
+    {
+        _onHealthChanged += action;
+    }
+
     public void Hurt(int damage)
     {
         _currentHealth -= damage;
-        
-        if(_currentHealth <= 0)
+
+        OnHealthChanged();
+
+        if (_currentHealth <= 0)
         {
             _onDeath?.Invoke();
         };
@@ -82,6 +105,15 @@ public class HealthController : IController, IDisposableAdvanced
     public void Recover()
     {
         _currentHealth = _maxHealth;
+
+        OnHealthChanged();
+    }
+
+    private void OnHealthChanged()
+    {
+        _healthPercentage = (float)_currentHealth / _maxHealth;
+
+        _onHealthChanged?.Invoke(_healthPercentage);
     }
 
     #endregion

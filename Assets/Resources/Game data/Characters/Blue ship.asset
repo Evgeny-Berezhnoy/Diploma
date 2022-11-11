@@ -17,6 +17,6 @@ MonoBehaviour:
   _dataPath: Game data/Characters/Blue ship
   _health: 1
   _speed: 5
-  _weaponRechargeTime: 0.7
+  _weaponRechargeTime: 0.5
   _sprite: {fileID: 6276863253803326835, guid: fecd9b1eef18ed0419fcd1fedc369660, type: 3}
   _projectileData: {fileID: 11400000, guid: 055c3f012a6207b43808a0b8ee08cbb9, type: 2}

@@ -7,6 +7,7 @@ public class GameplayMenuController : UIWindowsController<EGameplayMenuWindow>, 
     public void Initialize(
         ISubscriptionValue<EGameState> gameState,
         ISubscriptionProperty<bool> onCheckResurrectNecessity,
+        ISubscriptionProperty<float> onPlayerHealthChanged,
         ISubscriptionProperty onEscape,
         ISubscriptionProperty onRetry,
         ISubscriptionProperty onGameQuit)
@@ -19,19 +20,25 @@ public class GameplayMenuController : UIWindowsController<EGameplayMenuWindow>, 
             .Where(x => x.WindowType.Equals(EGameplayMenuWindow.Gameplay))
             .Cast<GameplayWindow>()
             .First()
-            .Initialize(onCheckResurrectNecessity);
+            .Initialize(
+                onCheckResurrectNecessity,
+                onPlayerHealthChanged);
 
         _windows
             .Where(x => x.WindowType.Equals(EGameplayMenuWindow.Pause))
             .Cast<PauseWindow>()
             .First()
-            .Initialize(onEscape, onGameQuit);
+            .Initialize(
+                onEscape,
+                onGameQuit);
 
         _windows
             .Where(x => x.WindowType.Equals(EGameplayMenuWindow.FinishGame))
             .Cast<FinishGameWindow>()
             .First()
-            .Initialize(onRetry, onGameQuit);
+            .Initialize(
+                onRetry,
+                onGameQuit);
     }
 
     #endregion

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Sparkling ball
   m_EditorClassIdentifier: 
   _damage: 5
-  _speed: 5
-  _lifeTime: 17
+  _speed: 4
+  _lifeTime: 5
   _path: Prefabs/Projectiles/Sparkling ball

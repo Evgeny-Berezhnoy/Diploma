@@ -14,6 +14,8 @@ public class PlayerContextInitializer
         [Inject(Id = "PlayerSettings : ResurrectionViewPrefab")] string resurrectionViewPrefab,
         // PlayerContextInjector
         [Inject(Id = "PlayerContext : onResurrectionContact")] ISubscriptionProperty<Collider2D> onResurrectionContact,
+        [Inject(Id = "PlayerContext : onCheckResurrectNecessity")] ISubscriptionProperty<bool> onCheckResurrectNecessity,
+        [Inject(Id = "PlayerContext : onPlayerHealthChanged")] ISubscriptionProperty<float> onPlayerHealthChanged,
         // GameContextInjector
         [Inject(Id = "GameContext : MainCamera")] Camera camera,
         [Inject(Id = "GameContext : SpawnPoints")] Transform[] spawnPoints,
@@ -59,6 +61,7 @@ public class PlayerContextInitializer
         var healthController = new HealthController(character.Health);
 
         healthController.AddDeathListener(onDeath.Invoke);
+        healthController.AddHealthChangedListener(value => onPlayerHealthChanged.Value = value);
 
         var playerPhysicsController =
             new PlayerPhysicsController(
@@ -66,6 +69,7 @@ public class PlayerContextInitializer
                 healthController,
                 resurrectionScaner,
                 onResurrectionContact,
+                onCheckResurrectNecessity,
                 onResurrectInput,
                 onRemoteHit);
 

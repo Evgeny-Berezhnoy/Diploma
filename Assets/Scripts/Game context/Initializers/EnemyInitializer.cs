@@ -63,7 +63,7 @@ public class EnemyInitializer
 
         var enemyPacks = new LinkedList<List<string>>();
 
-        for (int p = 0; p < enemies.Length; p++)
+        for (int p = 0; p < enemySequence.Packs.Length; p++)
         {
             var enemylist = new List<string>();
 
@@ -79,7 +79,7 @@ public class EnemyInitializer
                 };
             };
 
-            enemyPacks.AddFirst(enemylist);
+            enemyPacks.AddLast(enemylist);
         };
 
         var enemyService    = new EnemyService(onRemoveController, onRemoteHit);

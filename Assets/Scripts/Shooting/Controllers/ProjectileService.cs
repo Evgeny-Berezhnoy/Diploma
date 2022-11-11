@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Photon.Pun;
 
-public class ProjectileService : IUpdate, IFixedUpdate
+public class ProjectileService : IFixedUpdate
 {
     #region Fields
 
@@ -11,7 +12,19 @@ public class ProjectileService : IUpdate, IFixedUpdate
     private int _hitContactsAmount;
     private List<ProjectileSpawner> _spawners;
     private List<ProjectileController> _controllers;
-    
+
+    private ProjectileSpawner _spawner;
+    private ProjectileController _controller;
+    private Transform _spawnPoint;
+    private int _index;
+
+    #endregion
+
+    #region Observers
+
+    private ISubscriptionProperty<ProjectileController> _onAddController;
+    private ISubscriptionProperty<ProjectileController> _onRemoveController;
+
     #endregion
 
     #region Constructors
@@ -20,6 +33,8 @@ public class ProjectileService : IUpdate, IFixedUpdate
         int spawnerHeatQuantity,
         int spawnerBufferQuantity,
         int hitContactsAmount,
+        ISubscriptionProperty<ProjectileController> onAddController,
+        ISubscriptionProperty<ProjectileController> onRemoveController,
         ISubscriptionProperty<ProjectileLaunchData> onLaunch)
     {
         _spawnerHeatQuantity    = spawnerHeatQuantity;
@@ -28,6 +43,9 @@ public class ProjectileService : IUpdate, IFixedUpdate
         _spawners               = new List<ProjectileSpawner>();
         _controllers            = new List<ProjectileController>();
 
+        _onAddController    = onAddController;
+        _onRemoveController = onRemoveController;
+
         onLaunch.Subscribe(Launch);
     }
 
@@ -35,40 +53,15 @@ public class ProjectileService : IUpdate, IFixedUpdate
 
     #region Interface methods
 
-    public void OnUpdate(float deltaTime)
-    {
-        for(int i = _controllers.Count - 1; i >= 0; i--)
-        {
-            var controller = _controllers[i];
-
-            controller.OnUpdate(deltaTime);
-
-            if (controller.NeedsToDispose)
-            {
-                _controllers.RemoveAt(i);
-
-                var spawner = GetProjectileSpawner(controller.Pool);
-
-                spawner.Push(controller);
-            };
-        };
-    }
-
     public void OnFixedUpdate(float fixedDeltaTime)
     {
-        for (int i = _controllers.Count - 1; i >= 0; i--)
+        for (_index = _controllers.Count - 1; _index >= 0; _index--)
         {
-            var controller = _controllers[i];
+            _controller = _controllers[_index];
 
-            controller.OnFixedUpdate(fixedDeltaTime);
-
-            if (controller.NeedsToDispose)
+            if (_controller.NeedsToDispose)
             {
-                _controllers.RemoveAt(i);
-
-                var spawner = GetProjectileSpawner(controller.Pool);
-
-                spawner.Push(controller);
+                RemoveController(_controllers[_index]);
             };
         };
     }
@@ -79,40 +72,61 @@ public class ProjectileService : IUpdate, IFixedUpdate
 
     private void Launch(ProjectileLaunchData launchData)
     {
-        var spawner = GetProjectileSpawner(launchData.PoolData.Pool);
+        _spawner = GetProjectileSpawner(launchData.PoolData.Pool);
 
-        if (spawner == default(ProjectileSpawner))
+        if (_spawner == default(ProjectileSpawner))
         {
-            spawner =
+            _spawner =
                 new ProjectileSpawner(
                     launchData.PoolData,
                     _hitContactsAmount,
                     _spawnerBufferQuantity,
                     _spawnerHeatQuantity);
 
-            _spawners.Add(spawner);
+            _spawners.Add(_spawner);
         };
 
-        for(int i = 0; i < launchData.SpawnPoints.Length; i++)
+        for(_index = 0; _index < launchData.SpawnPoints.Length; _index++)
         {
-            var spawnPoint = launchData.SpawnPoints[i];
+            _spawnPoint = launchData.SpawnPoints[_index];
 
-            var controller = spawner.Pop();
+            _controller = _spawner.Pop();
 
-            controller
+            _controller
                 .View
                 .transform
                 .SetPositionAndRotation(
-                    spawnPoint.position,
-                    spawnPoint.rotation);
+                    _spawnPoint.position,
+                    _spawnPoint.rotation);
 
-            _controllers.Add(controller);
+            _controllers.Add(_controller);
+
+            _onAddController.Value = _controller;
         };
     }
 
+    public void Clear()
+    {
+        for (_index = _controllers.Count - 1; _index >= 0; _index--)
+        {
+            RemoveController(_controllers[_index]);
+        };
+    }
+    
     private ProjectileSpawner GetProjectileSpawner(PhotonView pool)
     {
         return _spawners.FirstOrDefault(x => x.Root == pool);
+    }
+
+    private void RemoveController(ProjectileController controller)
+    {
+        _controllers.Remove(controller);
+
+        _onRemoveController.Value = _controller;
+
+        _spawner = GetProjectileSpawner(_controller.Pool);
+
+        _spawner.Push(_controller);
     }
 
     #endregion

@@ -90,7 +90,6 @@ MonoBehaviour:
   _collider: {fileID: 7259326342082107463}
   _spriteRenderer: {fileID: 7259326342813670400}
   _launchClip: {fileID: 8300000, guid: 7c9adcf7c5c61264f9f0e54a0b3e28e9, type: 3}
-  _hitClip: {fileID: 8300000, guid: 7c8d7de1a423bfe428a726fbec8be323, type: 3}
   _hitAnimation: {fileID: 7400000, guid: d5fee909d197d794dbbe07984ee2bc89, type: 2}
 --- !u!1 &7259326342082107461
 GameObject:

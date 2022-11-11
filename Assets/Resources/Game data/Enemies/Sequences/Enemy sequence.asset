@@ -14,11 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _packs:
   - _enemies:
-    - _data: {fileID: 11400000, guid: 2f5ea6dd255f0334d8cf20fd170b711a, type: 2}
-      _quantity: 8
+    - _data: {fileID: 11400000, guid: 8ef25ca852ab5e34a82233491b038665, type: 2}
+      _quantity: 3
   - _enemies:
     - _data: {fileID: 11400000, guid: 23d9b2bb31807be49a01b72be40c3407, type: 2}
-      _quantity: 1
+      _quantity: 8
+  - _enemies:
+    - _data: {fileID: 11400000, guid: 2f5ea6dd255f0334d8cf20fd170b711a, type: 2}
+      _quantity: 6
   - _enemies:
     - _data: {fileID: 11400000, guid: 8ef25ca852ab5e34a82233491b038665, type: 2}
-      _quantity: 1
+      _quantity: 3
+  - _enemies:
+    - _data: {fileID: 11400000, guid: 23d9b2bb31807be49a01b72be40c3407, type: 2}
+      _quantity: 8
+  - _enemies:
+    - _data: {fileID: 11400000, guid: 2f5ea6dd255f0334d8cf20fd170b711a, type: 2}
+      _quantity: 4

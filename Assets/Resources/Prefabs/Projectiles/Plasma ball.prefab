@@ -171,8 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _collider: {fileID: 5810317209250821551}
   _spriteRenderer: {fileID: 3991490746696885893}
-  _launchClip: {fileID: 8300000, guid: e58e986a84fac62439847cbad736c31b, type: 3}
-  _hitClip: {fileID: 8300000, guid: 8bdbee441b3501f45bd65c22f15ee44d, type: 3}
+  _launchClip: {fileID: 8300000, guid: ffc91941b12e9444c99209db7ef1549d, type: 3}
   _hitAnimation: {fileID: 7400000, guid: d5fee909d197d794dbbe07984ee2bc89, type: 2}
 --- !u!1 &3991490747707400896
 GameObject:

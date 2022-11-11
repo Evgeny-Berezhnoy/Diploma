@@ -10,8 +10,7 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
     [SerializeField] private Collider2D _collider;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private AudioClip _launchClip;
-    [SerializeField] private AudioClip _hitClip;
-
+    
     [Header("Animations")]
     [SerializeField] private AnimationClip _hitAnimation;
 
@@ -183,8 +182,6 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
             .Play(_hitAnimation, transform, false);
         
         Hide();
-        
-        AudioSource.PlayClipAtPoint(_hitClip, transform.position);
     }
 
     #endregion

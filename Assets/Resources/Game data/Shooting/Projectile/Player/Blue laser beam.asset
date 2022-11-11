@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damage: 1
   _speed: 15
-  _lifeTime: 8
+  _lifeTime: 1.7
   _path: Prefabs/Projectiles/Blue laser beam

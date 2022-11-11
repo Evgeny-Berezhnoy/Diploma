@@ -9,6 +9,7 @@ public class PlayerContextInjector : MonoInstaller
     {
         Container.BindSubscriptionProperty<Collider2D>("PlayerContext : onResurrectionContact");
         Container.BindSubscriptionProperty<bool>("PlayerContext : onCheckResurrectNecessity");
+        Container.BindSubscriptionProperty<float>("PlayerContext : onPlayerHealthChanged");
     }
 
     #endregion

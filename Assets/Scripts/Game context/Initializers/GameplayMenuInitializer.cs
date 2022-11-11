@@ -12,6 +12,7 @@ public class GameplayMenuInitializer
         [Inject(Id = "GameContext : onQuitGame")] ISubscriptionProperty onQuitGame,
         // PlayerContextInjector
         [Inject(Id = "PlayerContext : onCheckResurrectNecessity")] ISubscriptionProperty<bool> onCheckResurrectNecessity,
+        [Inject(Id = "PlayerContext : onPlayerHealthChanged")] ISubscriptionProperty<float> onPlayerHealthChanged,
         // InputInjector
         [Inject(Id = "InputInjector : onEscape")] ISubscriptionProperty onEscape,
         [Inject(Id = "InputInjector : onRetry")] ISubscriptionProperty onRetryPress,
@@ -22,6 +23,7 @@ public class GameplayMenuInitializer
             .Initialize(
                 gameState,
                 onCheckResurrectNecessity,
+                onPlayerHealthChanged,
                 onEscape,
                 onRetryPress,
                 onQuitGame);

@@ -13,6 +13,8 @@ public class ShootingInjector : MonoInstaller
 
     public override void InstallBindings()
     {
+        Container.BindSubscriptionProperty<ProjectileController>("Shooting : onAddController");
+        Container.BindSubscriptionProperty<ProjectileController>("Shooting : onRemoveController");
         Container.BindSubscriptionProperty<ProjectileLaunchData>("Shooting : onLaunch");
         Container.BindSubscriptionProperty<ProjectilePhysicsController>("Shooting : onHit");
         Container.BindSubscriptionMessenger<int, HealthController>("Shooting : OnRemoteHit");

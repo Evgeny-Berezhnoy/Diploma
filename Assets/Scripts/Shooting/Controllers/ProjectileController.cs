@@ -1,6 +1,6 @@
 ﻿using Photon.Pun;
 
-public class ProjectileController : IUpdate, IFixedUpdate
+public class ProjectileController : IController
 {
     #region Fields
     
@@ -15,6 +15,8 @@ public class ProjectileController : IUpdate, IFixedUpdate
 
     public ProjectileView View => _view;
     public PhotonView Pool => _pool;
+    public ProjectileMoveController MoveController => _moveController;
+    public ProjectilePhysicsController PhysicsController => _physicsController;
     public bool NeedsToDispose => (_view.NeedsToDispose || !_moveController.IsAlive);
 
     #endregion
@@ -31,20 +33,6 @@ public class ProjectileController : IUpdate, IFixedUpdate
         _pool               = pool;
         _moveController     = moveController;
         _physicsController  = physicsController;
-    }
-
-    #endregion
-
-    #region Interface methods
-
-    public void OnUpdate(float deltaTime)
-    {
-        _moveController.OnUpdate(deltaTime);
-    }
-
-    public void OnFixedUpdate(float fixedDeltaTime)
-    {
-        _physicsController.OnFixedUpdate(fixedDeltaTime);
     }
 
     #endregion

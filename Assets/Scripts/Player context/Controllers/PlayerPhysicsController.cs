@@ -10,11 +10,15 @@ public class PlayerPhysicsController : IFixedUpdate
     
     private Collider2D _resurrectionCollider;
 
+    private bool _resurrectionIsNeeded;
+    private bool _resurrectionIsNeededCache;
+
     #endregion
 
     #region Observers
 
     private ISubscriptionProperty<Collider2D> _onResurrectionContact;
+    private ISubscriptionProperty<bool> _onCheckResurrectNecessity;
 
     #endregion
 
@@ -25,6 +29,7 @@ public class PlayerPhysicsController : IFixedUpdate
         HealthController healthController,
         ContactScaner resurrectionScaner,
         ISubscriptionProperty<Collider2D> onResurrectionContact,
+        ISubscriptionProperty<bool> onCheckResurrectNecessity,
         ISubscriptionProperty onResurrectInput,
         ISubscriptionMessenger<int, HealthController> onRemoteHit)
     {
@@ -32,7 +37,8 @@ public class PlayerPhysicsController : IFixedUpdate
         _healthController   = healthController;
         _resurrectionScaner = resurrectionScaner;
         
-        _onResurrectionContact  = onResurrectionContact;
+        _onResurrectionContact      = onResurrectionContact;
+        _onCheckResurrectNecessity  = onCheckResurrectNecessity;
 
         onResurrectInput.Subscribe(CheckResurrection);
         onRemoteHit.Subscribe(OnRemoteHit);
@@ -45,6 +51,14 @@ public class PlayerPhysicsController : IFixedUpdate
     public void OnFixedUpdate(float fixedDeltaTime)
     {
         _resurrectionScaner.OnFixedUpdate(fixedDeltaTime);
+
+        _resurrectionIsNeeded = (_resurrectionScaner.ContactsAmount > 0);
+
+        if (_resurrectionIsNeeded == _resurrectionIsNeededCache) return;
+
+        _resurrectionIsNeededCache = _resurrectionIsNeeded;
+
+        _onCheckResurrectNecessity.Value = _resurrectionIsNeeded;
     }
 
     #endregion

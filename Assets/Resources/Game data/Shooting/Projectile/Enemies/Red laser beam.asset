@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Red laser beam
   m_EditorClassIdentifier: 
   _damage: 1
-  _speed: 5
-  _lifeTime: 4
+  _speed: 7
+  _lifeTime: 3
   _path: Prefabs/Projectiles/Red laser beam
