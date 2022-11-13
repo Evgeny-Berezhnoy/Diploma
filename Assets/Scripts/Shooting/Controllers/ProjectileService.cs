@@ -1,22 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Photon.Pun;
 
 public class ProjectileService : IFixedUpdate
 {
+    #region Variables
+
+    private int _index;
+    private ProjectileSpawner _spawner;
+    private ProjectileController _controller;
+    private Transform _spawnPoint;
+    
+    #endregion
+
     #region Fields
 
     private int _spawnerHeatQuantity;
     private int _spawnerBufferQuantity;
     private int _hitContactsAmount;
+    private ProjectileSentryService _sentryService;
     private List<ProjectileSpawner> _spawners;
     private List<ProjectileController> _controllers;
-
-    private ProjectileSpawner _spawner;
-    private ProjectileController _controller;
-    private Transform _spawnPoint;
-    private int _index;
 
     #endregion
 
@@ -30,6 +34,7 @@ public class ProjectileService : IFixedUpdate
     #region Constructors
 
     public ProjectileService(
+        ProjectileSentryService sentryService,
         int spawnerHeatQuantity,
         int spawnerBufferQuantity,
         int hitContactsAmount,
@@ -37,6 +42,7 @@ public class ProjectileService : IFixedUpdate
         ISubscriptionProperty<ProjectileController> onRemoveController,
         ISubscriptionProperty<ProjectileLaunchData> onLaunch)
     {
+        _sentryService          = sentryService;
         _spawnerHeatQuantity    = spawnerHeatQuantity;
         _spawnerBufferQuantity  = spawnerBufferQuantity;
         _hitContactsAmount      = hitContactsAmount;
@@ -79,8 +85,9 @@ public class ProjectileService : IFixedUpdate
             _spawner =
                 new ProjectileSpawner(
                     launchData.PoolData,
-                    _hitContactsAmount,
+                    _sentryService,
                     _spawnerBufferQuantity,
+                    _hitContactsAmount,
                     _spawnerHeatQuantity);
 
             _spawners.Add(_spawner);
@@ -113,9 +120,9 @@ public class ProjectileService : IFixedUpdate
         };
     }
     
-    private ProjectileSpawner GetProjectileSpawner(PhotonView pool)
+    private ProjectileSpawner GetProjectileSpawner(PhotonSentry pool)
     {
-        return _spawners.FirstOrDefault(x => x.Root == pool);
+        return _spawners.FirstOrDefault(x => x.Pool == pool);
     }
 
     private void RemoveController(ProjectileController controller)

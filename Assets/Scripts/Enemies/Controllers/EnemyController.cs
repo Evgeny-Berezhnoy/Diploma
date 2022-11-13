@@ -19,7 +19,7 @@
     public EnemyTargetController TargetController => _targetController;
     public EnemyGunController GunController => _gunController;
     public HealthController HealthController => _healthController;
-    public bool NeedsToDespawn => _view.IsDead || (_moveController.CurrentPhase == EEnemyMovementPhase.Disabled);
+    public bool NeedsToDispose => !_view.Sentry.IsObserving || (_moveController.CurrentPhase == EEnemyMovementPhase.Disabled);
 
     #endregion
 

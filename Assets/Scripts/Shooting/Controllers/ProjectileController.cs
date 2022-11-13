@@ -1,11 +1,9 @@
-﻿using Photon.Pun;
-
-public class ProjectileController : IController
+﻿public class ProjectileController : IController
 {
     #region Fields
     
     private ProjectileView _view;
-    private PhotonView _pool;
+    private PhotonSentry _pool;
     private ProjectileMoveController _moveController;
     private ProjectilePhysicsController _physicsController;
 
@@ -14,10 +12,10 @@ public class ProjectileController : IController
     #region Properties
 
     public ProjectileView View => _view;
-    public PhotonView Pool => _pool;
+    public PhotonSentry Pool => _pool;
     public ProjectileMoveController MoveController => _moveController;
     public ProjectilePhysicsController PhysicsController => _physicsController;
-    public bool NeedsToDispose => (_view.NeedsToDispose || !_moveController.IsAlive);
+    public bool NeedsToDispose => (!_view.Sentry.IsObserving || !_moveController.IsAlive);
 
     #endregion
 
@@ -25,7 +23,7 @@ public class ProjectileController : IController
 
     public ProjectileController(
         ProjectileView view,
-        PhotonView pool,
+        PhotonSentry pool,
         ProjectileMoveController moveController,
         ProjectilePhysicsController physicsController)
     {

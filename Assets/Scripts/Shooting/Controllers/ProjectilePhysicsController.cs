@@ -1,19 +1,20 @@
-﻿using Photon.Pun;
+﻿using UnityEngine;
 
 public class ProjectilePhysicsController : IFixedUpdate
 {
+    #region Variables
+
+    private int _index;
+    private Collider2D _hitCollider; 
+    private PhotonSentry _sentry;
+
+    #endregion
+
     #region Fields
 
     private ProjectileView _view;
     private ContactScaner _hitScaner;
     
-    #endregion
-
-    #region Properties
-
-    public ProjectileView View => _view;
-    public ContactScaner HitScaner => _hitScaner;
-
     #endregion
 
     #region Constructors
@@ -30,23 +31,22 @@ public class ProjectilePhysicsController : IFixedUpdate
 
     public void OnFixedUpdate(float fixedDeltaTime)
     {
-        if (_view.NeedsToDispose) return;
+        if (!_view.Sentry.IsObserving) return;
 
         if (_hitScaner.Collider.enabled)
         {
             _hitScaner.OnFixedUpdate(fixedDeltaTime);
 
-            for(int i = 0; i < _hitScaner.ContactsAmount; i++)
+            for(_index = 0; _index < _hitScaner.ContactsAmount; _index++)
             {
-                var collider = _hitScaner.Contacts[i];
+                _hitCollider = _hitScaner.Contacts[_index];
 
-                var photonViewID =
-                    collider
+                _sentry =
+                    _hitCollider
                         .transform
-                        .GetComponentInParent<PhotonView>()
-                        .ViewID;
+                        .GetComponentInParent<PhotonSentry>();
 
-                _view.Hit(photonViewID);
+                _view.Hit(_sentry.ID, _sentry.PhotonViewID);
             };
         };
     }

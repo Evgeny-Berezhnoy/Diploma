@@ -16,3 +16,4 @@ MonoBehaviour:
   _spawnerBufferQuantity: 2
   _spawnInterval: 8
   _sequence: {fileID: 11400000, guid: d79d9283528ce8a4b9cba9a7e223aa96, type: 2}
+  _sentryService: Prefabs/Enemies/Enemy sentry service

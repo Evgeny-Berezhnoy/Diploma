@@ -15,4 +15,4 @@ MonoBehaviour:
   _hitContactsAmount: 2
   _spawnerHeatQuantity: 8
   _spawnerBufferQuantity: 6
-  _projectileHitNotifier: Prefabs/Projectiles/Network/Projectile hit notifier
+  _sentryService: Prefabs/Projectiles/Projectile Sentry Service

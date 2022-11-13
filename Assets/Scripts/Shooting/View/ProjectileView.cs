@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 
-[RequireComponent(typeof(PhotonView))]
-public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSource
+public class ProjectileView : PhotonSentryObserved, ISentryObservedCrucial, ISpecialEffectSource
 {
+    #region Variables
+
+    private bool _isHitRead;
+
+    #endregion
+
     #region Fields
 
     [Header("Components")]
@@ -14,23 +19,19 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
     [Header("Animations")]
     [SerializeField] private AnimationClip _hitAnimation;
 
-    private PhotonView _photonView;
-    
-    private int _poolViewID;
-    private Transform _pool;
-
-    private int _hitViewID;
     private int _damage;
-
+    
     private bool _isHit;
-    private bool _isLaunched;
-    private bool _needsToDispose;
+    
+    private int _hitSentryID;
+    private int _hitPhotonViewID;
+    private Vector2 _hitPosition;
 
     #endregion
 
     #region Observers
 
-    private ISubscriptionMessenger<int, HealthController> _onHit;
+    private ISubscriptionProperty<ProjectileView> _onHit;
     private ISubscriptionSurvey<SpecialEffectController> _specialEffectSurvey;
     
     #endregion
@@ -42,37 +43,10 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
         get => _damage;
         set => _damage = value;
     }
-    public int Pool
-    {
-        set
-        {
-            if (_poolViewID == value) return;
-
-            _poolViewID = value;
-            _pool       = PhotonView.Find(_poolViewID).transform;
-
-            if (!_isLaunched)
-            {
-                transform.SetParent(_pool);
-                transform.SetPositionAndRotation(_pool.position, _pool.rotation);
-            };
-        }
-    }
-    public bool NeedsToDispose => _needsToDispose;
+    public int HitSentryID => _hitSentryID;
+    public int HitPhotonViewID => _hitPhotonViewID;
     public Collider2D Collider => _collider;
-    public PhotonView PhotonView
-    {
-        get
-        {
-            if (!_photonView)
-            {
-                _photonView = PhotonView.Get(this);
-            };
-
-            return _photonView;
-        }
-    }
-    public ISubscriptionMessenger<int, HealthController> OnHit
+    public ISubscriptionProperty<ProjectileView> OnHit
     {
         set => _onHit = value;
     }
@@ -87,52 +61,40 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
 
     private void Start()
     {
-        if (!_isLaunched)
-        {
-            _collider.enabled       = false;
-            _spriteRenderer.enabled = false;
-        };
-
-        PhotonCore.Instance.OnViewInstantiated(this.PhotonView);
+        PhotonCore.Instance.OnViewInstantiated(this);
     }
 
     #endregion
 
     #region Interface methods
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void OnSentryObserveCrucial(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(_damage);
-            stream.SendNext(_isLaunched);
             stream.SendNext(_isHit);
-            stream.SendNext(_hitViewID);
-            stream.SendNext(_poolViewID);
+
+            if (_isHit)
+            {
+                stream.SendNext(_hitSentryID);
+                stream.SendNext(_hitPhotonViewID);
+                stream.SendNext(_hitPosition);
+            };
         }
         else
         {
-            _damage         = (int)  stream.ReceiveNext();
-            
-            var isLaunched  = (bool) stream.ReceiveNext();
-            var isHit       = (bool) stream.ReceiveNext();
-            var hitViewID   = (int)  stream.ReceiveNext();
-            var pool        = (int)  stream.ReceiveNext();
+            _isHitRead = (bool) stream.ReceiveNext();
 
-            Pool = pool;
-
-            if (_isHit != isHit && isHit)
+            if (_isHitRead)
             {
-                Hit(hitViewID);
+                _hitSentryID        = (int) stream.ReceiveNext();
+                _hitPhotonViewID    = (int) stream.ReceiveNext();
+                _hitPosition        = (Vector2) stream.ReceiveNext();
             };
 
-            if (_isLaunched != isLaunched && isLaunched)
+            if (_isHit != _isHitRead && _isHitRead)
             {
-                Launch();
-            }
-            else if(_isLaunched != isLaunched && !isLaunched)
-            {
-                Hide();
+                HitRead(_hitSentryID, _hitPhotonViewID, _hitPosition);
             };
         };
     }
@@ -141,47 +103,49 @@ public class ProjectileView : MonoBehaviour, IPunObservable, ISpecialEffectSourc
 
     #region Methods
 
-    public void Launch()
+    public override void Enable()
     {
         _isHit                  = false;
-        _isLaunched             = true;
-        _needsToDispose         = false;
         _collider.enabled       = true;
         _spriteRenderer.enabled = true;
 
-        transform.SetParent(null);
-        
         AudioSource.PlayClipAtPoint(_launchClip, transform.position);
     }
 
-    public void Hide()
+    public override void Disable()
     {
-        _isLaunched             = false;
-        _needsToDispose         = true;
         _collider.enabled       = false;
         _spriteRenderer.enabled = false;
-
-        transform.SetParent(_pool);
-        transform.SetPositionAndRotation(_pool.position, _pool.rotation);
     }
     
-    public void Hit(int hitViewID)
+    public void Hit(int hitSentryID, int hitPhotonViewID)
     {
-        _isHit          = true;
-        _hitViewID      = hitViewID;
+        _isHit              = true;
+        _hitSentryID        = hitSentryID;
+        _hitPhotonViewID    = hitPhotonViewID;
 
-        _onHit.Value    = hitViewID;
+        _onHit.Value = this;
         
-        if(_onHit.Result != _onHit.DefaultResult)
-        {
-            _onHit.Result.Hurt(_damage);
-        };
+        _specialEffectSurvey
+            .Get()
+            .Play(_hitAnimation, transform.position);
+
+        _hitPosition = transform.position;
+
+        _sentry.Stop();
+    }
+
+    private void HitRead(int hitSentryID, int hitPhotonViewID, Vector2 hitPosition)
+    {
+        _isHit = true;
+        _hitSentryID = hitSentryID;
+        _hitPhotonViewID = hitPhotonViewID;
+
+        _onHit.Value = this;
 
         _specialEffectSurvey
             .Get()
-            .Play(_hitAnimation, transform, false);
-        
-        Hide();
+            .Play(_hitAnimation, hitPosition);
     }
 
     #endregion

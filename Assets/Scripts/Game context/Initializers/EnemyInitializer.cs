@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 using Zenject;
 
 public class EnemyInitializer
@@ -18,23 +17,29 @@ public class EnemyInitializer
         [Inject(Id = "ShootingSettings : hitContactsAmount")] int hitContactsAmount,
         // ShootingInjector
         [Inject(Id = "Shooting : onLaunch")] ISubscriptionProperty<ProjectileLaunchData> onLaunch,
-        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionMessenger<int, HealthController> onRemoteHit,
+        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionProperty<ProjectileView> onRemoteHit,
         [Inject(Id = "Shooting : TargetSurvey")] ISubscriptionSurvey<Transform> targetSurvey,
         [Inject(Id = "Shooting : DefaultTarget")] Transform defaultTarget,
         // EnemySettings
         [Inject(Id = "EnemySettings : SpawnerHeatQuantity")] int spawnerHeatQuantity,
         [Inject(Id = "EnemySettings : SpawnerBufferQuantity")] int spawnerBufferQuantity,
         [Inject(Id = "EnemySettings : SpawnInterval")] float spawnTime,
+        [Inject(Id = "EnemySettings : SentryService")] string sentryServicePrefab,
         [Inject] EnemySequenceData enemySequence,
         // EnemiesInjector
-        [Inject(Id = "EnemiesInjector : Pool")] PhotonView pool,
+        [Inject(Id = "EnemiesInjector : Pool")] Transform pool,
         [Inject(Id = "EnemiesInjector : MovementMap")] EnemyMap map,
         [Inject(Id = "EnemiesInjector : OnEnemySequenceEnd")] ISubscriptionProperty onEnemySequenceEnd,
         [Inject(Id = "EnemiesInjector : onAllEnemiesDestroyed")] ISubscriptionProperty onAllEnemiesDestroyed,
         [Inject(Id = "EnemiesInjector : OnAddController")] ISubscriptionProperty<EnemyController> onAddController,
         [Inject(Id = "EnemiesInjector : OnRemoveController")] ISubscriptionProperty<EnemyController> onRemoveController)
     {
-        var mapController = new EnemyMapController(map);
+        var sentryServiceGO = PhotonCore.Instance.InstantiateInstance(sentryServicePrefab);
+        var sentryService   = sentryServiceGO.GetComponent<EnemySentryService>();
+
+        sentryService.Pool  = pool;
+
+        var mapController   = new EnemyMapController(map);
 
         var enemies = enemySequence.Enemies;
 
@@ -55,6 +60,7 @@ public class EnemyInitializer
             var spawner =
                 new EnemySpawner(
                     enemyPoolData,
+                    sentryService,
                     spawnerBufferQuantity,
                     spawnerHeatQuantity);
 

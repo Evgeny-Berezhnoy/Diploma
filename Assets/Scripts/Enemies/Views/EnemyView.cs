@@ -1,14 +1,20 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
+[RequireComponent(typeof(PhotonSentry))]
+public class EnemyView : PhotonSentryObserved, ISentryObservedCrucial, ISpecialEffectSource
 {
+    #region Variables
+
+    private bool _isKilledRead;
+
+    #endregion
+
     #region Fields
 
     [Header("Transforms")]
     [SerializeField] private Transform[] _muzzles;
-    [SerializeField] private PhotonView _projectilePool;
-
+    
     [Header("Components")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Collider2D _hitCollider;
@@ -16,13 +22,8 @@ public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
     [Header("Animations")]
     [SerializeField] private AnimationClip _deathClip;
     
-    private int _poolViewID;
-    private Transform _pool;
-
-    private bool _isDead;
     private bool _isKilled;
-
-    private PhotonView _photonView;
+    private Vector2 _killingPosition;
 
     #endregion
 
@@ -35,36 +36,7 @@ public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
     #region Properties
 
     public Transform[] Muzzles => _muzzles;
-    public PhotonView PhotonView
-    {
-        get
-        {
-            if (!_photonView)
-            {
-                _photonView = PhotonView.Get(this);
-            };
-
-            return _photonView;
-        }
-    }
-    public PhotonView ProjectilePool => _projectilePool;
     public Collider2D HitCollider => _hitCollider;
-    public bool IsDead => _isDead;
-    public int Pool
-    {
-        set
-        {
-            if (_poolViewID == value) return;
-
-            _poolViewID = value;
-            _pool       = PhotonView.Find(_poolViewID).transform;
-
-            if (_isDead)
-            {
-                PlaceInPool();
-            };
-        }
-    }
     public ISubscriptionSurvey<SpecialEffectController> SpecialEffectSurvey
     {
         set => _specialEffectSurvey = value;
@@ -76,44 +48,36 @@ public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 
     private void Start()
     {
-        _hitCollider.enabled    = !_isDead;
-        _spriteRenderer.enabled = !_isDead;
-
-        PhotonCore.Instance.OnViewInstantiated(PhotonView);
+        PhotonCore.Instance.OnViewInstantiated(this);
     }
 
     #endregion
 
     #region Interface methods
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void OnSentryObserveCrucial(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(_isDead);
             stream.SendNext(_isKilled);
-            stream.SendNext(_poolViewID);
+
+            if (_isKilled)
+            {
+                stream.SendNext(_killingPosition);
+            };
         }
         else
         {
-            var isDead      = (bool) stream.ReceiveNext();
-            var isKilled    = (bool) stream.ReceiveNext();
-            var pool        = (int)  stream.ReceiveNext();
+            _isKilledRead = (bool) stream.ReceiveNext();
 
-            Pool = pool;
-
-            if (_isKilled != isKilled && isKilled)
+            if (_isKilledRead)
             {
-                Kill();
+                _killingPosition = (Vector2) stream.ReceiveNext();
             };
 
-            if (_isDead != isDead && !isDead)
+            if (_isKilled != _isKilledRead && _isKilledRead)
             {
-                Spawn();
-            }
-            else if (_isDead != isDead && isDead)
-            {
-                Despawn();
+                KillRead(_killingPosition);
             };
         };
     }
@@ -122,40 +86,39 @@ public class EnemyView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 
     #region Methods
 
-    public void Spawn()
+    public override void Enable()
     {
         _isKilled               = false;
-        _isDead                 = false;
         _spriteRenderer.enabled = true;
         _hitCollider.enabled    = true;
-
-        transform.SetParent(null);
     }
 
+    public override void Disable()
+    {
+        _spriteRenderer.enabled = false;
+        _hitCollider.enabled    = false;
+    }
+    
     public void Kill()
     {
         _isKilled = true;
 
         _specialEffectSurvey
             .Get()
-            .Play(_deathClip, transform, false);
+            .Play(_deathClip, transform.position);
 
-        Despawn();
-    }
-    
-    public void Despawn()
-    {
-        _isDead                 = true;
-        _spriteRenderer.enabled = false;
-        _hitCollider.enabled    = false;
+        _killingPosition = transform.position;
 
-        PlaceInPool();
+        _sentry.Stop();
     }
-    
-    private void PlaceInPool()
+
+    private void KillRead(Vector2 position)
     {
-        transform.SetParent(_pool);
-        transform.SetPositionAndRotation(_pool.position, _pool.rotation);
+        _isKilled = true;
+
+        _specialEffectSurvey
+            .Get()
+            .Play(_deathClip, position);
     }
 
     #endregion

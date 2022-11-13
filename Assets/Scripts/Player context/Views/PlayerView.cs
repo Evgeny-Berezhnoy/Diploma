@@ -1,9 +1,14 @@
-﻿using UnityEngine;
-using Photon.Pun;
+﻿using Photon.Pun;
+using UnityEngine;
 
-[RequireComponent(typeof(PhotonView))]
-public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
+public class PlayerView : PhotonSentryObserved, ISentryObservedCrucial, ISpecialEffectSource
 {
+    #region Variables
+
+    private bool _isKilledRead;
+
+    #endregion
+
     #region Fields
 
     [Header("Transforms")]
@@ -11,7 +16,6 @@ public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
     [SerializeField] private Transform _wholeSprites;
     [SerializeField] private Transform _debrisSprites;
     [SerializeField] private Transform[] _muzzles;
-    [SerializeField] private PhotonView _projectilePool;
     
     [Header("Components")]
     [SerializeField] private Collider2D _hitCollider;
@@ -22,9 +26,8 @@ public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
     [SerializeField] private AnimationClip _deathClip;
     [SerializeField] private AnimationClip _resurrectionClip;
 
-    private bool _isDead;
-
-    private PhotonView _photonView;
+    private bool _isKilled;
+    private Vector2 _killingPosition;
 
     #endregion
 
@@ -38,23 +41,8 @@ public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 
     public Transform EnemyTarget => _enemyTarget;
     public Transform[] Muzzles => _muzzles;
-    public PhotonView PhotonView
-    {
-        get
-        {
-            if (!_photonView)
-            {
-                _photonView = PhotonView.Get(this);
-            };
-
-            return _photonView;
-        }
-    }
-    public Collider2D HitCollider => _hitCollider;
     public Collider2D ResurrectionCollider => _resurrectionCollider;
     public Collider2D ResurrectionTargetCollider => _resurrectionTargetCollider;
-    public PhotonView ProjectilePool => _projectilePool;
-    public bool IsDead => _isDead;
     public ISubscriptionSurvey<SpecialEffectController> SpecialEffectSurvey
     {
         set => _specialEffectSurvey = value;
@@ -66,73 +54,91 @@ public class PlayerView : MonoBehaviour, IPunObservable, ISpecialEffectSource
 
     private void Start()
     {
-        PhotonCore.Instance.OnViewInstantiated(this.PhotonView);
+        PhotonCore.Instance.OnViewInstantiated(this);
     }
 
     #endregion
 
     #region Interface methods
-    
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+
+    public void OnSentryObserveCrucial(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(_isDead);
+            stream.SendNext(_isKilled);
+
+            if (_isKilled)
+            {
+                stream.SendNext(_killingPosition);
+            };
         }
         else
         {
-            var isDead = (bool) stream.ReceiveNext();
+            _isKilledRead = (bool) stream.ReceiveNext();
 
-            if(_isDead != isDead && !isDead)
+            if (_isKilledRead)
             {
-                Resurrect();
-            }
-            else if(_isDead != isDead && isDead)
+                _killingPosition = (Vector2) stream.ReceiveNext();
+            };
+
+            if(_isKilled != _isKilledRead && _isKilledRead)
             {
-                Die();
+                KillRead(_killingPosition);
             };
         };
     }
-    
+
+    public override void Enable()
+    {
+        _isKilled = false;
+
+        _specialEffectSurvey
+            .Get()
+            .Play(_resurrectionClip, transform);
+
+        SetProperties();
+    }
+
+    public override void Disable()
+    {
+        SetProperties();
+    }
+
     #endregion
 
     #region Methods
 
-    public void Resurrect()
+    public void Kill()
     {
-        if (!_isDead) return;
-    
-        _isDead = false;
+        _isKilled = true;
 
         _specialEffectSurvey
             .Get()
-            .Play(_resurrectionClip, transform, true);
+            .Play(_deathClip, transform);
 
-        SetProperties();
+        _killingPosition = transform.position;
+
+        _sentry.Stop();
     }
 
-    public void Die()
+    private void KillRead(Vector2 position)
     {
-        if (_isDead) return;
-
-        _isDead = true;
+        _isKilled = true;
 
         _specialEffectSurvey
             .Get()
-            .Play(_deathClip, transform, false);
-        
-        SetProperties();
+            .Play(_deathClip, position);
     }
 
     private void SetProperties()
     {
-        _enemyTarget.gameObject.SetActive(!_isDead);
-        _wholeSprites.gameObject.SetActive(!_isDead);
-        _debrisSprites.gameObject.SetActive(_isDead);
+        _enemyTarget.gameObject.SetActive(_sentry.IsObserving);
+        _wholeSprites.gameObject.SetActive(_sentry.IsObserving);
+        _debrisSprites.gameObject.SetActive(!_sentry.IsObserving);
 
-        _hitCollider.enabled                = !_isDead;
-        _resurrectionCollider.enabled       = !_isDead;
-        _resurrectionTargetCollider.enabled = _isDead;
+        _hitCollider.enabled                = _sentry.IsObserving;
+        _resurrectionCollider.enabled       = _sentry.IsObserving;
+        _resurrectionTargetCollider.enabled = !_sentry.IsObserving;
     }
 
     #endregion

@@ -12,6 +12,7 @@ public class PlayerContextInitializer
         // PlayerSettings
         [Inject(Id = "PlayerSettings : ResurrectionContactsAmount")] int resurrectionContactsAmount,
         [Inject(Id = "PlayerSettings : ResurrectionViewPrefab")] string resurrectionViewPrefab,
+        [Inject(Id = "PlayerSettings : SentryService")] string sentryServicePrefab,
         // PlayerContextInjector
         [Inject(Id = "PlayerContext : onResurrectionContact")] ISubscriptionProperty<Collider2D> onResurrectionContact,
         [Inject(Id = "PlayerContext : onCheckResurrectNecessity")] ISubscriptionProperty<bool> onCheckResurrectNecessity,
@@ -30,23 +31,37 @@ public class PlayerContextInitializer
         [Inject(Id = "InputInjector : onResurrect")] ISubscriptionProperty onResurrectInput,
         // ShootingInjector
         [Inject(Id = "Shooting : onLaunch")] ISubscriptionProperty<ProjectileLaunchData> onLaunch,
-        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionMessenger<int, HealthController> onRemoteHit,
+        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionProperty<ProjectileView> onRemoteHit,
         [Inject(Id = "Shooting : TargetSurvey")] ISubscriptionSurvey<Transform> targetSurvey)
     {
-        var resurrectionService = new ResurrectionService(onResurrection);
+        var resurrectionRegistrator = new ResurrectionViewRegistrator(onResurrection);
         
         var resurrectionGO      = PhotonCore.Instance.InstantiateInstance(resurrectionViewPrefab);
         var resurrectionView    = resurrectionGO.GetComponent<ResurectionView>();
         
+        var resurrectionController = new ResurrectionController(resurrectionView);
+
+        var playerService = new PlayerService(resurrectionController, onDefeat, onRetry);
+
         var character   = PhotonCore.Instance.Character;
         var spawnPoint  = spawnPoints[PhotonCore.Instance.SpawnPointIndex];
-        
-        var playerService = new PlayerService(resurrectionService, onDefeat, onRetry);
 
-        var go = PhotonCore.Instance.InstantiateInstance(character.Path, spawnPoint.position, spawnPoint.rotation);
+        var prefab = Resources.Load<GameObject>(character.Path);
+
+        var go = Object.Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
 
         var view = go.GetComponent<PlayerView>();
-        
+
+        var sentryServiceGO = PhotonCore.Instance.InstantiateInstance(sentryServicePrefab);
+        var sentryService   = sentryServiceGO.GetComponent<PlayerSentryService>();
+
+        sentryService
+            .NetworkInstantiate(
+                character.Path,
+                go,
+                spawnPoint.position,
+                spawnPoint.rotation);
+
         var playerMoveController = new PlayerMoveController(go.transform, character.Speed, camera);
 
         onAxisShift.Subscribe(playerMoveController.Move);
@@ -73,21 +88,22 @@ public class PlayerContextInitializer
                 onResurrectInput,
                 onRemoteHit);
 
-        var projectilePoolData      = new ProjectilePoolData(LayerMask.GetMask(Layers.ENEMY), character.ProjectileData, view.ProjectilePool);
+        var projectilePoolData      = new ProjectilePoolData(character.ProjectileData, view.Sentry, LayerMask.GetMask(Layers.ENEMY));
         var projectileLaunchData    = new ProjectileLaunchData(projectilePoolData, view.Muzzles);
 
         var playerGunController     = new PlayerGunController(projectileLaunchData, onLaunch, character.WeaponRechargeTime, onFireKeyPress);
 
         onResurrectionContact.Subscribe(playerService.Resurrect);
         
-        onDeath.Subscribe(view.Die);
+        onDeath.Subscribe(view.Kill);
 
-        onResurrection.Subscribe(view.Resurrect);
+        onResurrection.Subscribe(view.Sentry.Observe);
         onResurrection.Subscribe(healthController.Recover);
         
         targetSurvey.Subscribe(playerService.GetEnemyTarget);
 
-        controllersManager.AddController(resurrectionService, EGameState.Defeat, EGameState.Destroyed, EGameState.Gameplay, EGameState.Pause, EGameState.Victory);
+        controllersManager.AddController(resurrectionRegistrator, EGameState.Defeat, EGameState.Destroyed, EGameState.Gameplay, EGameState.Pause, EGameState.Victory);
+        controllersManager.AddController(resurrectionController, EGameState.Defeat, EGameState.Destroyed, EGameState.Gameplay, EGameState.Pause, EGameState.Victory);
         controllersManager.AddController(playerService, EGameState.Destroyed, EGameState.Gameplay, EGameState.Pause);
         controllersManager.AddController(playerPhysicsController, EGameState.Gameplay, EGameState.Pause);
         controllersManager.AddController(playerMoveController, EGameState.Gameplay);

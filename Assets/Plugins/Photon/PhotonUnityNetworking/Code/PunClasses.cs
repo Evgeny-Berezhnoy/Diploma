@@ -71,6 +71,7 @@ namespace Photon.Pun
                 #endif
                 return this.pvCache;
             }
+            set => pvCache = value;
         }
 
         //#if UNITY_EDITOR

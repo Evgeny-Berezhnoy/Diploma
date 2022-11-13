@@ -9,11 +9,18 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerService : IUpdate, IDisposableAdvanced, IInRoomCallbacks
 {
+    #region Variables
+
+    private int _index;
+    private PlayerView _player;
+
+    #endregion
+
     #region Fields
 
     private bool _isDisposed;
     private List<PlayerView> _views;
-    private ResurrectionService _resurrectionService;
+    private ResurrectionController _resurrectionController;
 
     #endregion
 
@@ -32,12 +39,12 @@ public class PlayerService : IUpdate, IDisposableAdvanced, IInRoomCallbacks
     #region Constructors
 
     public PlayerService(
-        ResurrectionService resurrectionService,
+        ResurrectionController resurrectionController,
         ISubscriptionProperty onDefeat,
         ISubscriptionProperty onRetry)
     {
         _views                  = new List<PlayerView>();
-        _resurrectionService    = resurrectionService;
+        _resurrectionController = resurrectionController;
 
         _onDefeat = onDefeat;
 
@@ -56,9 +63,9 @@ public class PlayerService : IUpdate, IDisposableAdvanced, IInRoomCallbacks
     {
         if (_views.Count == 0) return;
 
-        for(int i = 0; i < _views.Count; i++)
+        for(_index = 0; _index < _views.Count; _index++)
         {
-            if (!_views[i].IsDead) return;
+            if (_views[_index].Sentry.IsObserving) return;
         };
 
         _onDefeat.Invoke();
@@ -79,12 +86,12 @@ public class PlayerService : IUpdate, IDisposableAdvanced, IInRoomCallbacks
 
     public void OnPlayerLeftRoom(Player otherPlayer)
     {
-        var view =
+        _player =
             _views
-                .Where(x => x.PhotonView.Owner == otherPlayer)
+                .Where(x => x.Sentry.PhotonView.Owner == otherPlayer)
                 .First();
 
-        _views.Remove(view);
+        _views.Remove(_player);
     }
 
     public void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged) {}
@@ -99,44 +106,41 @@ public class PlayerService : IUpdate, IDisposableAdvanced, IInRoomCallbacks
 
     public Transform GetEnemyTarget()
     {
-        var player =
+        _player =
             _views
                 .Where(x => x.EnemyTarget.gameObject.activeSelf)
                 .Random();
 
-        if (player == default)
+        if (_player == default)
         {
             return null;
         };
 
-        return player.EnemyTarget;
+        return _player.EnemyTarget;
     }
 
     public void Resurrect(Collider2D collider)
     {
-        var view = _views.First(x => x.ResurrectionTargetCollider == collider);
+        _player = _views.First(x => x.ResurrectionTargetCollider == collider);
 
-        _resurrectionService.Resurrect(view.PhotonView.OwnerActorNr);
+        _resurrectionController.Resurrect(_player.Sentry.PhotonView.OwnerActorNr);
     }
 
     public void ResurrectAll()
     {
-        for(int i = 0; i < _views.Count; i++)
+        for(_index = 0; _index < _views.Count; _index++)
         {
-            _resurrectionService.Resurrect(_views[i].PhotonView.OwnerActorNr);
+            _resurrectionController.Resurrect(_views[_index].Sentry.PhotonView.OwnerActorNr);
         };
     }
 
-    private void OnViewInstantiated(PhotonView photonView)
+    private void OnViewInstantiated(MonoBehaviour view)
     {
-        var view =
-            photonView
-                .gameObject
-                .GetComponent<PlayerView>();
+        _player = view as PlayerView;
 
-        if (!view) return;
+        if (!_player) return;
 
-        _views.Add(view);
+        _views.Add(_player);
     }
 
     #endregion

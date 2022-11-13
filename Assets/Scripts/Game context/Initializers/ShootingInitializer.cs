@@ -13,14 +13,19 @@ public class ShootingInitializer
         [Inject(Id = "ShootingSettings : hitContactsAmount")] int hitContactsAmount,
         [Inject(Id = "ShootingSettings : SpawnerHeatQuantity")] int spawnerHeatQuantity,
         [Inject(Id = "ShootingSettings : SpawnerBufferQuantity")] int spawnerBufferQuantity,
+        [Inject(Id = "ShootingSettings : SentryService")] string sentryServicePrefab,
         // ShootingInjector
         [Inject(Id = "Shooting : onAddController")] ISubscriptionProperty<ProjectileController> onAddController,
         [Inject(Id = "Shooting : onRemoveController")] ISubscriptionProperty<ProjectileController> onRemoveController,
         [Inject(Id = "Shooting : onLaunch")] ISubscriptionProperty<ProjectileLaunchData> onLaunch,
-        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionMessenger<int, HealthController> onHit)
+        [Inject(Id = "Shooting : OnRemoteHit")] ISubscriptionProperty<ProjectileView> onHit)
     {
+        var sentryServiceGO = PhotonCore.Instance.InstantiateInstance(sentryServicePrefab);
+        var sentryService   = sentryServiceGO.GetComponent<ProjectileSentryService>();
+
         var projectileService =
             new ProjectileService(
+                sentryService,
                 spawnerHeatQuantity,
                 spawnerBufferQuantity,
                 hitContactsAmount,

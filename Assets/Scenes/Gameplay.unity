@@ -1634,7 +1634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd25f37b0420fac448e691633ae2412f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pool: {fileID: 1908549174}
+  _pool: {fileID: 1908549173}
   _movementMap: {fileID: 416507901}
 --- !u!1 &962555691
 GameObject:
@@ -2923,19 +2923,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1908549172}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 3568af80f802baa4c951dea426a4be7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &1915601311
 GameObject:
   m_ObjectHideFlags: 0

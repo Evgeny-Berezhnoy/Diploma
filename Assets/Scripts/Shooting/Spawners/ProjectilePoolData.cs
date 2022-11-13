@@ -1,6 +1,4 @@
-﻿using Photon.Pun;
-
-public sealed class ProjectilePoolData : NetworkPoolData<ProjectileData>
+﻿public sealed class ProjectilePoolData : NetworkPoolData<ProjectileData, PhotonSentry>
 {
     #region Fields
 
@@ -10,7 +8,7 @@ public sealed class ProjectilePoolData : NetworkPoolData<ProjectileData>
 
     #region Constructors
 
-    public ProjectilePoolData(int layerMask, ProjectileData data, PhotonView pool) : base(data, pool)
+    public ProjectilePoolData(ProjectileData data, PhotonSentry pool, int layerMask) : base(data, pool)
     {
         LayerMask = layerMask;
     }

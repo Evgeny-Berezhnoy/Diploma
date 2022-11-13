@@ -446,9 +446,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5677080841073198440}
-  - component: {fileID: 5677080841073198446}
-  - component: {fileID: 5677080841073198447}
   - component: {fileID: 294262237895792135}
+  - component: {fileID: -2685427469403582398}
+  - component: {fileID: 5345865444529701309}
   m_Layer: 0
   m_Name: Grey ship
   m_TagString: Untagged
@@ -478,46 +478,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5677080841073198446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5677080841073198441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 5677080841073198447}
-  - {fileID: 294262237895792135}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &5677080841073198447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5677080841073198441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &294262237895792135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,12 +496,39 @@ MonoBehaviour:
   _muzzles:
   - {fileID: 5677080840688762078}
   - {fileID: 5677080841875446693}
-  _projectilePool: {fileID: 8032472442345238168}
   _hitCollider: {fileID: 5677080840742443111}
   _resurrectionCollider: {fileID: 5838259334280045265}
   _resurrectionTargetCollider: {fileID: 4113049115418362564}
   _deathClip: {fileID: 7400000, guid: a85e279af429bed44835aa2246bb7109, type: 2}
   _resurrectionClip: {fileID: 7400000, guid: c15ecb286d9a8c045ae04d40db346fc7, type: 2}
+--- !u!114 &-2685427469403582398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5677080841073198441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1cf0c89a5bd57489ff6c398b88a0df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &5345865444529701309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5677080841073198441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04e5fa7480b88af4cb1c8ae03ffffe05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5677080841875446694
 GameObject:
   m_ObjectHideFlags: 0

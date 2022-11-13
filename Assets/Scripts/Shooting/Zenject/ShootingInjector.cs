@@ -17,7 +17,7 @@ public class ShootingInjector : MonoInstaller
         Container.BindSubscriptionProperty<ProjectileController>("Shooting : onRemoveController");
         Container.BindSubscriptionProperty<ProjectileLaunchData>("Shooting : onLaunch");
         Container.BindSubscriptionProperty<ProjectilePhysicsController>("Shooting : onHit");
-        Container.BindSubscriptionMessenger<int, HealthController>("Shooting : OnRemoteHit");
+        Container.BindSubscriptionProperty<ProjectileView>("Shooting : OnRemoteHit");
         Container.BindSubscriptionSurvey<Transform>("Shooting : TargetSurvey", true);
         Container.BindComponent(_defaultTarget, "Shooting : DefaultTarget");
     }

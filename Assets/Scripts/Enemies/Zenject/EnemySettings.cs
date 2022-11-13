@@ -10,6 +10,7 @@ public class EnemySettings : ScriptableObjectInstaller
     [SerializeField, Range(0, 6)] private int _spawnerBufferQuantity;
     [SerializeField, Range(3, 10)] private float _spawnInterval;
     [SerializeField] private EnemySequenceData _sequence;
+    [SerializeField] private string _sentryService;
 
     #endregion
 
@@ -35,6 +36,11 @@ public class EnemySettings : ScriptableObjectInstaller
         Container
             .Bind<EnemySequenceData>()
             .FromInstance(_sequence);
+
+        Container
+            .Bind<string>()
+            .WithId("EnemySettings : SentryService")
+            .FromInstance(_sentryService);
     }
 
     #endregion

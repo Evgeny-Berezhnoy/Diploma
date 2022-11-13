@@ -31,7 +31,7 @@ public class PlayerPhysicsController : IFixedUpdate
         ISubscriptionProperty<Collider2D> onResurrectionContact,
         ISubscriptionProperty<bool> onCheckResurrectNecessity,
         ISubscriptionProperty onResurrectInput,
-        ISubscriptionMessenger<int, HealthController> onRemoteHit)
+        ISubscriptionProperty<ProjectileView> onRemoteHit)
     {
         _view               = view;
         _healthController   = healthController;
@@ -77,14 +77,13 @@ public class PlayerPhysicsController : IFixedUpdate
         };
     }
 
-    private HealthController OnRemoteHit(int photonViewID)
+    private void OnRemoteHit(ProjectileView projectile)
     {
-        if(_view.PhotonView.ViewID == photonViewID)
+        if(_view.Sentry.ID == projectile.HitSentryID &&
+            _view.Sentry.PhotonViewID == projectile.HitPhotonViewID)
         {
-            return _healthController;
-        }
-
-        return null;
+            _healthController.Hurt(projectile.Damage);
+        };
     }
 
     #endregion

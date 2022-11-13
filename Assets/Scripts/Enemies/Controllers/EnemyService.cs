@@ -2,6 +2,13 @@
 
 public class EnemyService : IUpdate
 {
+    #region Variables
+
+    private int _index;
+    private EnemyController _controller;
+
+    #endregion
+
     #region Fields
 
     private List<EnemyController> _controllers;
@@ -18,7 +25,7 @@ public class EnemyService : IUpdate
 
     public EnemyService(
         ISubscriptionProperty<EnemyController> onRemoveController,
-        ISubscriptionMessenger<int, HealthController> onRemoteHit)
+        ISubscriptionProperty<ProjectileView> onRemoteHit)
     {
         _controllers        = new List<EnemyController>();
 
@@ -33,11 +40,11 @@ public class EnemyService : IUpdate
 
     public void OnUpdate(float deltaTime)
     {
-        for(int i = _controllers.Count - 1; i >= 0; i--)
+        for(_index = _controllers.Count - 1; _index >= 0; _index--)
         {
-            var controller = _controllers[i];
+            _controller = _controllers[_index];
 
-            CheckDespawn(controller, i);
+            CheckDespawn(_controller, _index);
         };
     }
 
@@ -52,19 +59,19 @@ public class EnemyService : IUpdate
 
     public void Clear()
     {
-        for (int i = _controllers.Count - 1; i >= 0; i--)
+        for (_index = _controllers.Count - 1; _index >= 0; _index--)
         {
-            var controller = _controllers[i];
+            _controller = _controllers[_index];
 
-            _controllers.RemoveAt(i);
+            _controllers.RemoveAt(_index);
 
-            _onRemoveController.Value = controller;
+            _onRemoveController.Value = _controller;
         };
     }
 
     private void CheckDespawn(EnemyController controller, int index)
     {
-        if (controller.NeedsToDespawn)
+        if (controller.NeedsToDispose)
         {
             _controllers.RemoveAt(index);
 
@@ -72,19 +79,20 @@ public class EnemyService : IUpdate
         };
     }
 
-    private HealthController GetHealthController(int photonViewID)
+    private void GetHealthController(ProjectileView projectile)
     {
-        for(int i = 0; i < _controllers.Count; i++)
+        for(_index = 0; _index < _controllers.Count; _index++)
         {
-            var controller = _controllers[i];
+            _controller = _controllers[_index];
 
-            if(controller.View.PhotonView.ViewID == photonViewID)
+            if(_controller.View.Sentry.ID == projectile.HitSentryID &&
+                _controller.View.Sentry.PhotonViewID == projectile.HitPhotonViewID)
             {
-                return controller.HealthController;
+                _controller.HealthController.Hurt(projectile.Damage);
+
+                break;
             };
         };
-
-        return null;
     }
 
     #endregion

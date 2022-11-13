@@ -1,10 +1,10 @@
-﻿using Photon.Pun;
+﻿using UnityEngine;
 
 public class SpecialEffectViewRegistrator : IController
 {
     #region Fields
 
-    private ISpecialEffectSource _view;
+    private ISpecialEffectSource _specialEffectSource;
 
     #endregion
 
@@ -27,16 +27,13 @@ public class SpecialEffectViewRegistrator : IController
 
     #region Methods
 
-    private void OnViewInstantiated(PhotonView photonView)
+    private void OnViewInstantiated(MonoBehaviour view)
     {
-        _view =
-            photonView
-                .gameObject
-                .GetComponent<ISpecialEffectSource>();
+        _specialEffectSource = view as ISpecialEffectSource;
 
-        if (_view == null) return;
+        if (_specialEffectSource == null) return;
 
-        _view.SpecialEffectSurvey = _specialEffectSurvey;
+        _specialEffectSource.SpecialEffectSurvey = _specialEffectSurvey;
     }
 
     #endregion

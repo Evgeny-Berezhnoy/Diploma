@@ -1,42 +1,61 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 
-public abstract class NetworkControllerSpawner<TController, TView>
+public abstract class NetworkControllerSpawner<TController, TView, TSentryService>
     where TController : IController
     where TView : MonoBehaviour
+    where TSentryService : PhotonSentryService
 {
-    #region Fields
+    #region Variables
 
-    protected string _template;
-    protected int _bufferQuantity;
-    protected PhotonView _root;
-    protected Queue<TController> _instances;
-
+    protected int _index;
     protected TController _controller;
     protected TView _view;
-    
+    protected GameObject _go;
+
+    #endregion
+
+    #region Fields
+
+    protected string _templatePath;
+    protected GameObject _template;
+    protected int _bufferQuantity;
+    protected TSentryService _sentryService;
+    protected Queue<TController> _instances;
+
     #endregion
 
     #region Properties
 
-    public string Template => _template;
-    public PhotonView Root => _root;
+    public GameObject Template => _template;
     
     #endregion
 
     #region Constructors
 
-    public NetworkControllerSpawner(string template, int bufferQuantity, PhotonView root)
+    public NetworkControllerSpawner(
+        string templatePath,
+        TSentryService sentryService,
+        int bufferQuantity)
     {
-        _template       = template;
+        _templatePath   = templatePath;
+        _template       = Resources.Load<GameObject>(templatePath);
         _bufferQuantity = bufferQuantity;
-        _root           = root;
+        _sentryService  = sentryService;
 
         _instances  = new Queue<TController>();
     }
 
-    public NetworkControllerSpawner(string template, int bufferQuantity, PhotonView root, int heatQuantity) : this(template, bufferQuantity, root)
+    public NetworkControllerSpawner(
+        string template,
+        TSentryService sentryService,
+        int bufferQuantity,
+        int heatQuantity)
+    :
+    this(
+        template,
+        sentryService,
+        bufferQuantity)
     {
         Heat(heatQuantity);
     }
@@ -72,7 +91,7 @@ public abstract class NetworkControllerSpawner<TController, TView>
 
     public virtual void Heat(int quantity)
     {
-        for (int i = 0; i < quantity; i++)
+        for (_index = 0; _index < quantity; _index++)
         {
             Push(Create());
         };
@@ -80,14 +99,21 @@ public abstract class NetworkControllerSpawner<TController, TView>
 
     protected virtual TController Create()
     {
-        var go = PhotonCore.Instance.InstantiateInstance(_template, _root.transform.position, _root.transform.rotation);
+        _go = Object.Instantiate(_template);
 
-        return CreateController(go);
+        NetworkInstantiate();
+
+        _sentryService.AddSentry(_go);
+
+        _controller = CreateController(_go);
+
+        return _controller;
     }
 
     protected abstract TView GetView(TController controller);
     protected abstract void EnableView(TView view);
     protected abstract void DisableView(TView view);
+    protected abstract void NetworkInstantiate();
     protected abstract TController CreateController(GameObject go);
     
     #endregion

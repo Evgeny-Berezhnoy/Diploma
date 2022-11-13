@@ -40,13 +40,22 @@ public class SpecialEffectController : IUpdate
 
     #region Methods
 
-    public void Play(AnimationClip animation, Transform transform, bool followRoot)
+    public void Play(AnimationClip animation, Transform transform)
     {
-        _followRoot = followRoot;
+        _followRoot = true;
 
         _root = transform;
 
         _view.transform.position = _root.position;
+
+        _view.Play(animation);
+    }
+
+    public void Play(AnimationClip animation, Vector2 position)
+    {
+        _followRoot = false;
+
+        _view.transform.position = position;
 
         _view.Play(animation);
     }

@@ -9,6 +9,7 @@ public class ShootingSettings : ScriptableObjectInstaller
     [SerializeField, Range(1, 8)] private int _hitContactsAmount;
     [SerializeField, Range(0, 20)] private int _spawnerHeatQuantity;
     [SerializeField, Range(0, 6)] private int _spawnerBufferQuantity;
+    [SerializeField] private string _sentryService;
     
     #endregion
 
@@ -30,6 +31,11 @@ public class ShootingSettings : ScriptableObjectInstaller
             .Bind<int>()
             .WithId("ShootingSettings : SpawnerBufferQuantity")
             .FromInstance(_spawnerBufferQuantity);
+
+        Container
+            .Bind<string>()
+            .WithId("ShootingSettings : SentryService")
+            .FromInstance(_sentryService);
     }
 
     #endregion

@@ -1,6 +1,6 @@
-﻿using Photon.Pun;
+﻿using UnityEngine;
 
-public sealed class EnemyPoolData : NetworkPoolData<EnemyData>
+public sealed class EnemyPoolData : NetworkPoolData<EnemyData, Transform>
 {
     #region Fields
 
@@ -12,8 +12,7 @@ public sealed class EnemyPoolData : NetworkPoolData<EnemyData>
     #region Observers
 
     private ISubscriptionProperty<ProjectileLaunchData> _onLaunchSubscription;
-    private ISubscriptionProperty<PhotonView> _onExplosion;
-
+    
     #endregion
 
     #region Properties
@@ -28,7 +27,7 @@ public sealed class EnemyPoolData : NetworkPoolData<EnemyData>
 
     public EnemyPoolData(
         EnemyData data,
-        PhotonView pool,
+        Transform pool,
         int projectileHitContactsAmount,
         Disposer disposer,
         ISubscriptionProperty<ProjectileLaunchData> onLaunchSubscription)

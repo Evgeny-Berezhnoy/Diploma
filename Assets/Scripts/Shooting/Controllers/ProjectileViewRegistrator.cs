@@ -1,16 +1,22 @@
-﻿using Photon.Pun;
+﻿using UnityEngine;
 
 public class ProjectileViewRegistrator : IController
 {
+    #region Fields
+
+    private ProjectileView _projectile;
+
+    #endregion
+
     #region Observers
 
-    private ISubscriptionMessenger<int, HealthController> _onHit;
+    private ISubscriptionProperty<ProjectileView> _onHit;
 
     #endregion
 
     #region Constructors
 
-    public ProjectileViewRegistrator(ISubscriptionMessenger<int, HealthController> onHit)
+    public ProjectileViewRegistrator(ISubscriptionProperty<ProjectileView> onHit)
     {
         _onHit = onHit;
 
@@ -21,16 +27,13 @@ public class ProjectileViewRegistrator : IController
 
     #region Methods
 
-    private void OnViewInstantiated(PhotonView photonView)
+    private void OnViewInstantiated(MonoBehaviour view)
     {
-        var view =
-            photonView
-                .gameObject
-                .GetComponent<ProjectileView>();
+        _projectile = view as ProjectileView;
 
-        if (!view) return;
+        if (!_projectile) return;
 
-        view.OnHit = _onHit;
+        _projectile.OnHit = _onHit;
     }
 
     #endregion

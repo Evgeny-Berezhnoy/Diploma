@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using Photon.Pun;
 using Zenject;
 
 public class EnemiesInjector : MonoInstaller
 {
     #region Fields
 
-    [SerializeField] private PhotonView _pool;
+    [SerializeField] private Transform _pool;
     [SerializeField] private EnemyMap _movementMap;
 
     #endregion
@@ -16,7 +15,7 @@ public class EnemiesInjector : MonoInstaller
     public override void InstallBindings()
     {
         Container
-            .Bind<PhotonView>()
+            .Bind<Transform>()
             .WithId("EnemiesInjector : Pool")
             .FromInstance(_pool);
 

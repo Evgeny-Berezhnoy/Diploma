@@ -20,7 +20,7 @@ public class PhotonCore : MonoBehaviourPunCallbacks
 
     #region Events
 
-    public event Action<PhotonView> _onViewInstantiated;
+    public event Action<MonoBehaviour> _onViewInstantiated;
     public event Action _onQuitGameplayScene;
 
     #endregion
@@ -249,7 +249,7 @@ public class PhotonCore : MonoBehaviourPunCallbacks
         PhotonNetwork.Destroy(instance);
     }
 
-    public void AddViewInstantiationListener(Action<PhotonView> action)
+    public void AddViewInstantiationListener(Action<MonoBehaviour> action)
     {
         _onViewInstantiated += action;
     }
@@ -259,9 +259,9 @@ public class PhotonCore : MonoBehaviourPunCallbacks
         _onQuitGameplayScene += action;
     }
 
-    public void OnViewInstantiated(PhotonView photonView)
+    public void OnViewInstantiated(MonoBehaviour view)
     {
-        _onViewInstantiated.Invoke(photonView);
+        _onViewInstantiated.Invoke(view);
     }
 
     private void SetSpawnPointIndex()
@@ -304,7 +304,7 @@ public class PhotonCore : MonoBehaviourPunCallbacks
         var handlers =
             _onViewInstantiated
                 ?.GetInvocationList()
-                .Cast<Action<PhotonView>>()
+                .Cast<Action<MonoBehaviour>>()
                 .ToArray();
 
         if (handlers != null)

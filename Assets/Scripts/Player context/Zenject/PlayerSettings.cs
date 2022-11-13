@@ -8,6 +8,7 @@ public class PlayerSettings : ScriptableObjectInstaller
 
     [SerializeField, Range(1, 4)] private int _resurrectionContactsAmount;
     [SerializeField] private string _resurrectionViewPrefab;
+    [SerializeField] private string _sentryServicePrefab;
 
     #endregion
 
@@ -24,6 +25,11 @@ public class PlayerSettings : ScriptableObjectInstaller
             .Bind<string>()
             .WithId("PlayerSettings : ResurrectionViewPrefab")
             .FromInstance(_resurrectionViewPrefab);
+
+        Container
+            .Bind<string>()
+            .WithId("PlayerSettings : SentryService")
+            .FromInstance(_sentryServicePrefab);
     }
 
     #endregion

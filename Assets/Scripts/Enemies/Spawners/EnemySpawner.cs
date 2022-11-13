@@ -1,7 +1,19 @@
 ﻿using UnityEngine;
 
-public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView>
+public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView, EnemySentryService>
 {
+    #region Variables
+
+    private PhotonSentryTransformObserved _transformObserved;
+    private EnemyMoveController _moveController;
+    private EnemyTargetController _targetController;
+    private ProjectilePoolData _projectilePoolData;
+    private ProjectileLaunchData _projectileLaunchData;
+    private EnemyGunController _gunController;
+    private HealthController _healthController;
+
+    #endregion
+
     #region Fields
 
     private EnemyPoolData _poolData;
@@ -12,23 +24,26 @@ public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView>
 
     public EnemySpawner(
         EnemyPoolData poolData,
+        EnemySentryService sentryService,
         int bufferQuantity)
     :
     base(
         poolData.Data.Path,
-        bufferQuantity,
-        poolData.Pool)
+        sentryService,
+        bufferQuantity)
     {
         _poolData = poolData;
     }
 
     public EnemySpawner(
         EnemyPoolData poolData,
+        EnemySentryService sentryService,
         int bufferQuantity,
         int heatQuantity)
     :
     this(
         poolData,
+        sentryService,
         bufferQuantity)
     {
         Heat(heatQuantity);
@@ -40,17 +55,12 @@ public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView>
 
     public override EnemyController Pop()
     {
-        var controller = base.Pop();
+        _controller = base.Pop();
 
-        controller.GunController.Reset();
-        controller.HealthController.Recover();
+        _controller.GunController.Reset();
+        _controller.HealthController.Recover();
 
-        return controller;
-    }
-
-    public override void Push(EnemyController instance)
-    {
-        base.Push(instance);
+        return _controller;
     }
 
     protected override EnemyView GetView(EnemyController controller)
@@ -60,52 +70,51 @@ public class EnemySpawner : NetworkControllerSpawner<EnemyController, EnemyView>
 
     protected override void EnableView(EnemyView view)
     {
-        view.Spawn();
+        view.Sentry.Observe();
     }
 
     protected override void DisableView(EnemyView view)
     {
-        view.Despawn();
+        view.Sentry.Stop();
     }
 
     protected override EnemyController CreateController(GameObject go)
     {
-        var view = go.GetComponent<EnemyView>();
+        _view = go.GetComponent<EnemyView>();
 
-        view.Pool = _root.ViewID;
+        _moveController         = new EnemyMoveController(_view.transform, _poolData.Data.Speed, _poolData.Data.OverwatchTime);
+        _targetController       = new EnemyTargetController(_poolData.Data.TargetRotationSpeed, _view.transform);
 
-        var moveController          = new EnemyMoveController(view.transform, _poolData.Data.Speed, _poolData.Data.OverwatchTime);
-        var targetController        = new EnemyTargetController(_poolData.Data.TargetRotationSpeed, view.transform);
+        _projectilePoolData     = new ProjectilePoolData(_poolData.Data.ProjectileData, _view.Sentry, LayerMask.GetMask(Layers.PLAYER));
+        _projectileLaunchData   = new ProjectileLaunchData(_projectilePoolData, _view.Muzzles);
 
-        var projectilePoolData      = new ProjectilePoolData(LayerMask.GetMask(Layers.PLAYER), _poolData.Data.ProjectileData, view.ProjectilePool);
-        var projectileLaunchData    = new ProjectileLaunchData(projectilePoolData, view.Muzzles);
+        _gunController          = new EnemyGunController(_projectileLaunchData, _poolData.OnLaunchSubscription, _poolData.Data.WeaponRechargeTime);
 
-        var gunController           = new EnemyGunController(projectileLaunchData, _poolData.OnLaunchSubscription, _poolData.Data.WeaponRechargeTime);
-
-        var healthController        = new HealthController(_poolData.Data.Health);
-
-        healthController.AddDeathListener(view.Kill);
+        _healthController       = new HealthController(_poolData.Data.Health);
         
-        var contactScaner =
-            new ContactScaner(
-                view.HitCollider,
-                LayerMask.GetMask(Layers.PLAYER_PROJECTILE),
-                true,
-                _poolData.ProjectileHitContactsAmount);
-
-        var enemyController =
+        _controller =
             new EnemyController(
-                _template,
-                view,
-                moveController,
-                targetController,
-                gunController,
-                healthController);
+                _templatePath,
+                _view,
+                _moveController,
+                _targetController,
+                _gunController,
+                _healthController);
 
-        _poolData.Disposer.Subscribe(gunController.Dispose);
-        _poolData.Disposer.Subscribe(healthController.Dispose);
+        _transformObserved = go.GetComponent<PhotonSentryTransformObserved>();
+        _transformObserved.SetPool(_poolData.Pool, true);
+        
+        _healthController.AddDeathListener(_view.Kill);
+        
+        _poolData.Disposer.Subscribe(_gunController.Dispose);
+        _poolData.Disposer.Subscribe(_healthController.Dispose);
+        
+        return _controller;
+    }
 
-        return enemyController;
+    protected override void NetworkInstantiate()
+    {
+        _sentryService.NetworkInstantiate(_templatePath);
     }
 
     #endregion

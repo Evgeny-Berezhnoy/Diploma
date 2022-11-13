@@ -1,11 +1,9 @@
-﻿using Photon.Pun;
-
-public class NetworkPoolData<TData> : PoolData<TData, PhotonView>
+﻿public class NetworkPoolData<TData, TPool> : PoolData<TData, TPool>
     where TData : IPoolData, IGameData
 {
     #region Constructors
 
-    public NetworkPoolData(TData data, PhotonView pool) : base(data, pool) {}
+    public NetworkPoolData(TData data, TPool pool) : base(data, pool) {}
 
     #endregion
 }

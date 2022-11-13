@@ -46,7 +46,7 @@ public abstract class NetworkStation : MonoBehaviour, IPunObservable
 
     public virtual void Start()
     {
-        PhotonCore.Instance.OnViewInstantiated(this.PhotonView);
+        PhotonCore.Instance.OnViewInstantiated(this);
     }
 
     #endregion

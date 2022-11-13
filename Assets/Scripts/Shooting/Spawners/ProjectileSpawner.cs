@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
 
-public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, ProjectileView>
+public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, ProjectileView, ProjectileSentryService>
 {
+    #region Variables
+
+    private PhotonSentryTransformObserved _transformObserved;
+    private ProjectileMoveController _moveController;
+    private ContactScaner _hitScaner;
+    private ProjectilePhysicsController _physicsController;
+
+    #endregion
+
     #region Fields
 
     private int _hitContactsAmount;
@@ -9,9 +18,9 @@ public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, 
 
     #endregion
 
-    #region Observers
+    #region Properties
 
-    private ISubscriptionProperty<ProjectilePhysicsController> _onHit;
+    public PhotonSentry Pool => _poolData.Pool;
 
     #endregion
 
@@ -19,13 +28,14 @@ public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, 
 
     public ProjectileSpawner(
         ProjectilePoolData poolData,
-        int hitContactsAmount,
-        int bufferQuantity)
+        ProjectileSentryService sentryService,
+        int bufferQuantity,
+        int hitContactsAmount)
     :
     base(
         poolData.Data.Path,
-        bufferQuantity,
-        poolData.Pool)
+        sentryService,
+        bufferQuantity)
     {
         _poolData           = poolData;
         _hitContactsAmount  = hitContactsAmount;
@@ -33,14 +43,16 @@ public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, 
 
     public ProjectileSpawner(
         ProjectilePoolData poolData,
+        ProjectileSentryService sentryService,
         int bufferQuantity,
         int hitContactsAmount,
         int heatQuantity)
     :
     this(
         poolData,
-        hitContactsAmount,
-        bufferQuantity)
+        sentryService,
+        bufferQuantity,
+        hitContactsAmount)
     {
         Heat(heatQuantity);
     }
@@ -53,18 +65,9 @@ public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, 
     {
         var controller = base.Pop();
 
-        controller.Reset();
+        controller.MoveController.Reset();
 
         return controller;
-    }
-
-    public override void Push(ProjectileController instance)
-    {
-        var view = GetView(instance);
-
-        DisableView(view);
-        
-        base.Push(instance);
     }
 
     protected override ProjectileView GetView(ProjectileController controller)
@@ -74,47 +77,59 @@ public class ProjectileSpawner : NetworkControllerSpawner<ProjectileController, 
 
     protected override void EnableView(ProjectileView view)
     {
-        view.Launch();
+        view.Sentry.Observe();
     }
 
     protected override void DisableView(ProjectileView view)
     {
-        view.Hide();
+        view.Sentry.Stop();
+    }
+
+    protected override void NetworkInstantiate()
+    {
+        _sentryService
+            .NetworkInstantiate(
+                _templatePath,
+                _poolData.Data.Damage,
+                _poolData.Pool.ID,
+                _poolData.Pool.PhotonViewID);
     }
 
     protected override ProjectileController CreateController(GameObject go)
     {
-        var view = go.GetComponent<ProjectileView>();
+        _view = go.GetComponent<ProjectileView>();
+        
+        _view.Damage = _poolData.Data.Damage;
 
-        view.Pool   = _root.ViewID;
-        view.Damage = _poolData.Data.Damage;
-
-        var moveController =
+        _moveController =
             new ProjectileMoveController(
-                view.transform,
+                _view.transform,
                 _poolData.Data.Speed,
                 _poolData.Data.LifeTime);
 
-        var hitScaner =
+        _hitScaner =
             new ContactScaner(
-                view.Collider,
+                _view.Collider,
                 _poolData.LayerMask,
                 true,
                 _hitContactsAmount);
 
-        var physicsController =
+        _physicsController =
             new ProjectilePhysicsController(
-                view,
-                hitScaner);
+                _view,
+                _hitScaner);
 
-        var controller =
+        _controller =
             new ProjectileController(
-                view,
-                _root,
-                moveController,
-                physicsController);
+                _view,
+                _poolData.Pool,
+                _moveController,
+                _physicsController);
 
-        return controller;
+        _transformObserved = go.GetComponent<PhotonSentryTransformObserved>();
+        _transformObserved.SetPool(_poolData.Pool.ID, _poolData.Pool.PhotonViewID, true);
+        
+        return _controller;
     }
 
     #endregion
