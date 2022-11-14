@@ -1,6 +1,6 @@
 ﻿public enum EEnemyType
 {
-    Standard,
     Tank,
+    Standard,
     Swift
 }

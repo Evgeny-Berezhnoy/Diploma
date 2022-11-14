@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "Character", menuName = "Game/Data/Character")]
-public class CharacterData : ScriptableObject, IGameData
+public class CharacterData : ScriptableObject, IGameData, IShip
 {
     #region Fields
 
@@ -19,6 +19,9 @@ public class CharacterData : ScriptableObject, IGameData
     #region Interface properties
 
     public string Path => _path;
+    public int Health => _health;
+    public float Speed => _speed;
+    public float WeaponRechargeTime => _weaponRechargeTime;
 
     #endregion
 
@@ -26,9 +29,6 @@ public class CharacterData : ScriptableObject, IGameData
 
     public string Name => _name;
     public string DataPath => _dataPath;
-    public int Health => _health;
-    public float Speed => _speed;
-    public float WeaponRechargeTime => _weaponRechargeTime;
     public Sprite Sprite => _sprite;
     public ProjectileData ProjectileData => _projectileData;
 

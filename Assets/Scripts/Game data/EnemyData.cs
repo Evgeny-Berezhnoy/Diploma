@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "Enemy", menuName = "Game/Data/Enemy")]
-public class EnemyData : ScriptableObject, IGameData, IPoolData
+public class EnemyData : ScriptableObject, IGameData, IPoolData, IShip
 {
     #region Fields
 
@@ -18,14 +18,14 @@ public class EnemyData : ScriptableObject, IGameData, IPoolData
     #region Interface properties
 
     public string Path => _path;
+    public int Health => _health;
+    public float Speed => _speed;
+    public float WeaponRechargeTime => _weaponRechargeTime;
 
     #endregion
 
     #region Properties
 
-    public int Health => _health;
-    public float Speed => _speed;
-    public float WeaponRechargeTime => _weaponRechargeTime;
     public float OverwatchTime => _overwatchTime;
     public float TargetRotationSpeed => _targetRotationSpeed;
     public ProjectileData ProjectileData => _projectileData;
